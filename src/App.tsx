@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Container from "react-bootstrap/Container";
 import "./App.css";
 
 const App: React.FC = () => {
@@ -34,44 +33,42 @@ const App: React.FC = () => {
   };
 
   return (
-    <Container>
-      <div>
-        <div className={`center ${editingItem !== null ? "shift-left" : ""}`}>
-          <div className="plus-circle" onClick={handleAddClick}>
-            +
-          </div>
-          {inputVisible && (
-            <input
-              type="text"
-              className="input-field"
-              onKeyDown={handleInputKeyDown}
-              autoFocus
-            />
-          )}
-          {items.map((item, index) => (
-            <div
-              key={index}
-              className="item-rectangle"
-              onClick={() => handleItemClick(index)}
-            >
-              {item}
-            </div>
-          ))}
+    <div className="App">
+      <div className={`center ${editingItem !== null ? "shift-left" : ""}`}>
+        <div className="plus-circle" onClick={handleAddClick}>
+          +
         </div>
-        {editingItem !== null && (
-          <div className="large-text-area-container">
-            <div className="close-button" onClick={handleCloseClick}>
-              X
-            </div>
-            <textarea
-              className="large-text-area"
-              value={largeText}
-              onChange={(e) => setLargeText(e.target.value)}
-            />
-          </div>
+        {inputVisible && (
+          <input
+            type="text"
+            className="input-field"
+            onKeyDown={handleInputKeyDown}
+            autoFocus
+          />
         )}
+        {items.map((item, index) => (
+          <div
+            key={index}
+            className="item-rectangle"
+            onClick={() => handleItemClick(index)}
+          >
+            {item}
+          </div>
+        ))}
       </div>
-    </Container>
+      {editingItem !== null && (
+        <div className="large-text-area-container">
+          <div className="close-button" onClick={handleCloseClick}>
+            X
+          </div>
+          <textarea
+            className="large-text-area"
+            value={largeText}
+            onChange={(e) => setLargeText(e.target.value)}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 
