@@ -18,7 +18,7 @@
 }
 
 .shift-left {
-  transform: translateX(-60%);
+  transform: translateX(-100%);
 }
 
 .plus-circle {
@@ -51,6 +51,16 @@
   border-radius: 5px;
   cursor: pointer;
   width: fit-content;
+  /* background-color: white; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  color: red;
 }
 
 .large-text-area-container {
@@ -78,4 +88,42 @@
   font-size: 16px;
   border: 2px solid #007bff;
   border-radius: 5px;
+}
+
+.confirm-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirm-dialog {
+  /* background: white; */
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.confirm-dialog button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirm-dialog button:first-of-type {
+  background: #007bff;
+  color: white;
+}
+
+.confirm-dialog button:last-of-type {
+  background: #dc3545;
+  color: white;
 }
