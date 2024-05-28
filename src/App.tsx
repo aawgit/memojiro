@@ -1,19 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import Container from "react-bootstrap/Container";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import "./App.css";
+import { Alert } from "react-bootstrap";
+import { setLocal, getLocal } from "./hooks/usePersistentState";
+import NavBarC from "./components/navbar";
+
+interface item {
+  title: string;
+  description: string;
+}
 
 const App: React.FC = () => {
   const [inputVisible, setInputVisible] = useState(false);
-  const [items, setItems] = useState<string[]>([]);
+  //@ts-ignore
+  const [show, setShow] = useState(true);
   const [editingItem, setEditingItem] = useState<number | null>(null);
-  const [largeText, setLargeText] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const [items, setItems] = useState<item[]>(() => {
+    // Load state from localStorage if available
+    const savedItems = getLocal("items");
+    return savedItems ? savedItems : [];
+  });
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    setLocal("items", items);
+  }, [items]);
 
   const handleAddClick = () => {
     setInputVisible(true);
@@ -24,20 +46,28 @@ const App: React.FC = () => {
       e.key === "Enter" &&
       (e.target as HTMLInputElement).value.trim() !== ""
     ) {
-      setItems([...items, (e.target as HTMLInputElement).value]);
+      setItems([
+        ...items,
+        { title: (e.target as HTMLInputElement).value, description: "" },
+      ]);
       setInputVisible(false);
       (e.target as HTMLInputElement).value = "";
     }
   };
 
+  const handleDescriptionChange = (index: number, newDescription: string) => {
+    const updatedItems = items.map((item, i) =>
+      i === index ? { ...item, description: newDescription } : item
+    );
+    setItems(updatedItems);
+  };
+
   const handleItemClick = (index: number) => {
     setEditingItem(index);
-    setLargeText(items[index]);
   };
 
   const handleCloseClick = () => {
     setEditingItem(null);
-    setLargeText("");
   };
 
   const handleDragEnd = (result: DropResult) => {
@@ -61,6 +91,7 @@ const App: React.FC = () => {
       setItems(newItems);
       setShowConfirmDialog(false);
       setItemToDelete(null);
+      setEditingItem(0);
     }
   };
 
@@ -70,76 +101,102 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="App">
-      <div className={`center ${editingItem !== null ? "shift-left" : ""}`}>
-        <div className="plus-circle" onClick={handleAddClick}>
-          +
-        </div>
-        {inputVisible && (
-          <input
-            type="text"
-            className="input-field"
-            onKeyDown={handleInputKeyDown}
-            autoFocus
-          />
-        )}
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="droppable">
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {items.map((item, index) => (
-                  <Draggable
-                    key={index}
-                    draggableId={index.toString()}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className="item-rectangle"
-                      >
-                        <span onClick={() => handleItemClick(index)}>
-                          {item}
-                        </span>
-                        <span
-                          className="delete-icon"
-                          onClick={() => handleDeleteClick(index)}
-                        >
-                          🗑️
-                        </span>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
+    <div>
+      <NavBarC></NavBarC>
+      <Alert
+        key="warning"
+        variant="warning"
+        onClose={() => setShow(false)}
+        dismissible
+      >
+        Notes are saved in the browser. They will be there next time you open it
+        unless browser history is cleared.
+      </Alert>
+      <Container className="justify-content-center vh-100">
+        <Row>
+          <Col
+            className="d-flex align-items-center justify-content-center"
+            sm={4}
+          >
+            <div className="list-container">
+              <div className="plus-circle" onClick={handleAddClick}>
+                +
               </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </div>
-      {editingItem !== null && (
-        <div className="large-text-area-container">
-          <div className="close-button" onClick={handleCloseClick}>
-            X
-          </div>
-          <textarea
-            className="large-text-area"
-            value={largeText}
-            onChange={(e) => setLargeText(e.target.value)}
-          />
-        </div>
-      )}
-      {showConfirmDialog && (
-        <div className="confirm-dialog-overlay">
-          <div className="confirm-dialog">
-            <p>Are you sure?</p>
-            <button onClick={handleConfirmDelete}>Yes</button>
-            <button onClick={handleCancelDelete}>No</button>
-          </div>
-        </div>
-      )}
+              {inputVisible && (
+                <input
+                  type="text"
+                  className="input-field"
+                  onKeyDown={handleInputKeyDown}
+                  autoFocus
+                />
+              )}
+
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="droppable">
+                  {(provided) => (
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                      {items.map((item, index) => (
+                        <Draggable
+                          key={index}
+                          draggableId={index.toString()}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="item-rectangle"
+                            >
+                              <span onClick={() => handleItemClick(index)}>
+                                {item.title}
+                              </span>
+                              <span
+                                className="delete-icon"
+                                onClick={() => handleDeleteClick(index)}
+                              >
+                                🗑️
+                              </span>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            </div>
+          </Col>
+
+          {editingItem !== null && items[editingItem] && (
+            <Col sm={8}>
+              <div className="large-text-area-container">
+                <div className="close-button" onClick={handleCloseClick}>
+                  X
+                </div>
+                <textarea
+                  className="large-text-area"
+                  value={items[editingItem].description}
+                  // onChange={(e) => setLargeText(e.target.value)}
+                  onChange={(e) =>
+                    handleDescriptionChange(editingItem, e.target.value)
+                  }
+                />
+              </div>
+            </Col>
+          )}
+          {showConfirmDialog && (
+            <div className="confirm-dialog-overlay">
+              <div className="confirm-dialog">
+                <p>Are you sure?</p>
+                <button onClick={handleConfirmDelete}>Yes</button>
+                <button onClick={handleCancelDelete}>No</button>
+              </div>
+            </div>
+          )}
+        </Row>
+      </Container>
     </div>
   );
 };
