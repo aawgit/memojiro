@@ -114,10 +114,7 @@ const App: React.FC = () => {
       </Alert>
       <Container className="justify-content-center vh-100">
         <Row>
-          <Col
-            className="d-flex align-items-center justify-content-center"
-            sm={4}
-          >
+          <Col className="align-items-center justify-content-center" sm={4}>
             <div className="list-container">
               <div className="plus-circle" onClick={handleAddClick}>
                 +
@@ -171,19 +168,20 @@ const App: React.FC = () => {
 
           {editingItem !== null && items[editingItem] && (
             <Col sm={8}>
-              <div className="large-text-area-container">
+              <Container className="large-text-area-container">
                 <div className="close-button" onClick={handleCloseClick}>
-                  X
+                  &times;
                 </div>
                 <textarea
-                  className="large-text-area"
+                  className="col-12 form-control"
+                  rows={15}
                   value={items[editingItem].description}
                   // onChange={(e) => setLargeText(e.target.value)}
                   onChange={(e) =>
                     handleDescriptionChange(editingItem, e.target.value)
                   }
                 />
-              </div>
+              </Container>
             </Col>
           )}
           {showConfirmDialog && (
