@@ -12,6 +12,8 @@ import "./App.css";
 import { Alert } from "react-bootstrap";
 import { setLocal, getLocal } from "./hooks/usePersistentState";
 import NavBarC from "./components/navbar";
+import { analytics } from "../firebaseConfig"; // Import the analytics instance
+import { logEvent } from "firebase/analytics";
 
 interface item {
   title: string;
@@ -25,6 +27,11 @@ const App: React.FC = () => {
   const [editingItem, setEditingItem] = useState<number | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  // Log page view event
+  useEffect(() => {
+    logEvent(analytics, "page_view", { page_title: "Home" });
+  }, []);
 
   const [items, setItems] = useState<item[]>(() => {
     // Load state from localStorage if available
@@ -109,8 +116,8 @@ const App: React.FC = () => {
         onClose={() => setShow(false)}
         dismissible
       >
-        Notes are saved in the browser. They will be there next time you open it
-        unless browser history is cleared.
+        Notes are saved in the browser. They will be there next time you open
+        this page unless browsing history is cleared.
       </Alert>
       <Container className="justify-content-center vh-100">
         <Row>
