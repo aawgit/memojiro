@@ -4,7 +4,7 @@ import {
   Droppable,
   Draggable,
   DropResult,
-} from "react-beautiful-dnd";
+} from "@hello-pangea/dnd";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -19,6 +19,18 @@ interface item {
   title: string;
   description: string;
 }
+
+const reorder = (
+  list: item[],
+  startIndex: number,
+  endIndex: number
+): item[] => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
 
 const App: React.FC = () => {
   const [inputVisible, setInputVisible] = useState(false);
@@ -77,13 +89,16 @@ const App: React.FC = () => {
     setEditingItem(null);
   };
 
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-
-    const reorderedItems = Array.from(items);
-    const [removed] = reorderedItems.splice(result.source.index, 1);
-    reorderedItems.splice(result.destination.index, 0, removed);
-
+  const onDragEnd = (result: DropResult): void => {
+    // Dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+    const reorderedItems = reorder(
+      items,
+      result.source.index,
+      result.destination.index
+    );
     setItems(reorderedItems);
   };
 
@@ -135,7 +150,7 @@ const App: React.FC = () => {
                 />
               )}
 
-              <DragDropContext onDragEnd={handleDragEnd}>
+              <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="droppable">
                   {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef}>
