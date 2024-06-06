@@ -14,6 +14,7 @@ import { setLocal, getLocal } from "./hooks/usePersistentState";
 import NavBarC from "./components/navbar";
 import { analytics } from "../firebaseConfig"; // Import the analytics instance
 import { logEvent } from "firebase/analytics";
+import Editor from "react-simple-wysiwyg";
 
 interface item {
   title: string;
@@ -44,6 +45,12 @@ const App: React.FC = () => {
   useEffect(() => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
+
+  const [html, setHtml] = useState("my <b>HTML</b>");
+
+  function onChange(e) {
+    setHtml(e.target.value);
+  }
 
   const [items, setItems] = useState<item[]>(() => {
     // Load state from localStorage if available
@@ -131,8 +138,8 @@ const App: React.FC = () => {
         onClose={() => setShow(false)}
         dismissible
       >
-        Notes are saved in the browser. They will be there next time you open
-        this page unless browsing history is cleared.
+        Notes are saved in the browser and will be here next time you open this
+        page, unless browsing history is cleared.
       </Alert>
       <Container className="justify-content-center vh-100">
         <Row>
@@ -194,7 +201,7 @@ const App: React.FC = () => {
                 <div className="close-button" onClick={handleCloseClick}>
                   &times;
                 </div>
-                <textarea
+                {/* <textarea
                   className="col-12 form-control"
                   rows={15}
                   value={items[editingItem].description}
@@ -202,6 +209,20 @@ const App: React.FC = () => {
                   onChange={(e) =>
                     handleDescriptionChange(editingItem, e.target.value)
                   }
+                /> */}
+
+                <Editor
+                  value={items[editingItem].description}
+                  onChange={(e) =>
+                    handleDescriptionChange(editingItem, e.target.value)
+                  }
+                  // onKeyDown={(e) => {
+                  //   if (e.keyCode === 9) {
+                  //     e.preventDefault();
+                  //     console.log(html.substring(0, html.length - 15));
+                  //     setHtml(html + "&nbsp");
+                  //   }
+                  // }}
                 />
               </Container>
             </Col>

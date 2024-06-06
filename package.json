@@ -13,9 +13,11 @@
     "@hello-pangea/dnd": "^16.6.0",
     "bootstrap": "^5.3.3",
     "firebase": "^10.12.2",
+    "marked": "^12.0.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-simple-wysiwyg": "^3.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
