@@ -1,60 +1,41 @@
 import React, { useEffect, useState } from "react";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "@hello-pangea/dnd";
 import Container from "react-bootstrap/Container";
-import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import "./styles/App.css";
-import { Alert } from "react-bootstrap";
-import { setLocal, getLocal } from "./hooks/usePersistentState";
-import NavBarC from "./components/navbar";
-import { analytics } from "../firebaseConfig"; // Import the analytics instance
+import Col from "react-bootstrap/Col";
+import Alert from "react-bootstrap/Alert";
+import { useMediaQuery } from "react-responsive";
 import { logEvent } from "firebase/analytics";
-import Editor from "react-simple-wysiwyg";
+import { analytics } from "../firebaseConfig";
+import { getLocal, setLocal } from "./hooks/usePersistentState";
+import NavBarC from "./components/NavBar";
+import ItemList from "./components/ItemList";
+import ItemDetail from "./components/ItemDetail";
+import ConfirmDialog from "./components/ConfirmDialog";
+import "./styles/App.css";
+import "./styles/DesktopLayout.css";
+import "./styles/MobileLayout.css";
 
-import "./styles/DesktopLayout.css"; // Custom styles
-
-interface item {
+interface Item {
   title: string;
   description: string;
 }
 
-const reorder = (
-  list: item[],
-  startIndex: number,
-  endIndex: number
-): item[] => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-};
-
 const App: React.FC = () => {
   const [inputVisible, setInputVisible] = useState(false);
-  //@ts-ignore
   const [show, setShow] = useState(true);
   const [editingItem, setEditingItem] = useState<number | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  // Determine if the screen size is mobile
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   // Log page view event
   useEffect(() => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
 
-  const [html, setHtml] = useState("my <b>HTML</b>");
-
-  function onChange(e) {
-    setHtml(e.target.value);
-  }
-
-  const [items, setItems] = useState<item[]>(() => {
+  const [items, setItems] = useState<Item[]>(() => {
     // Load state from localStorage if available
     const savedItems = getLocal("items");
     return savedItems ? savedItems : [];
@@ -98,19 +79,6 @@ const App: React.FC = () => {
     setEditingItem(null);
   };
 
-  const onDragEnd = (result: DropResult): void => {
-    // Dropped outside the list
-    if (!result.destination) {
-      return;
-    }
-    const reorderedItems = reorder(
-      items,
-      result.source.index,
-      result.destination.index
-    );
-    setItems(reorderedItems);
-  };
-
   const handleDeleteClick = (index: number) => {
     setItemToDelete(index);
     setShowConfirmDialog(true);
@@ -122,7 +90,7 @@ const App: React.FC = () => {
       setItems(newItems);
       setShowConfirmDialog(false);
       setItemToDelete(null);
-      setEditingItem(0);
+      setEditingItem(null);
     }
   };
 
@@ -135,10 +103,7 @@ const App: React.FC = () => {
     <div>
       <Container fluid className="macos-container">
         <Row>
-          {/* <Col>
-            <h1 className="macos-title">Notes</h1>
-          </Col> */}
-          <NavBarC></NavBarC>
+          <NavBarC />
           <Alert
             key="warning"
             variant="warning"
@@ -150,126 +115,55 @@ const App: React.FC = () => {
           </Alert>
         </Row>
         <Row className="macos-content">
-          <Col md={3} className="macos-panel">
-            {/* <h2 className="macos-section-title">Sidebar</h2>
-            <p className="macos-text">Some sidebar content</p> */}
-
-            <div className="list-container">
-              <div
-                style={{
-                  alignContent: "center",
-                  display: "flex",
-                  width: "100%",
-                }}
-              >
-                <div className="plus-circle" onClick={handleAddClick}>
-                  +
-                </div>
-              </div>
-              {inputVisible && (
-                <input
-                  type="text"
-                  className="input-field"
-                  onKeyDown={handleInputKeyDown}
-                  autoFocus
+          {isMobile ? (
+            <Col className="macos-panel">
+              <ItemList
+                items={items}
+                inputVisible={inputVisible}
+                handleAddClick={handleAddClick}
+                handleInputKeyDown={handleInputKeyDown}
+                handleItemClick={handleItemClick}
+                handleDeleteClick={handleDeleteClick}
+                setItems={setItems} // Add this line
+                editingItem={editingItem}
+                handleCloseClick={handleCloseClick}
+                handleDescriptionChange={handleDescriptionChange}
+              />
+            </Col>
+          ) : (
+            <>
+              <Col md={3} className="macos-panel">
+                <ItemList
+                  items={items}
+                  inputVisible={inputVisible}
+                  handleAddClick={handleAddClick}
+                  handleInputKeyDown={handleInputKeyDown}
+                  handleItemClick={handleItemClick}
+                  handleDeleteClick={handleDeleteClick}
+                  setItems={setItems} // Add this line
                 />
-              )}
-
-              <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="droppable">
-                  {(provided) => (
-                    <div {...provided.droppableProps} ref={provided.innerRef}>
-                      {items.map((item, index) => (
-                        <Draggable
-                          key={index}
-                          draggableId={index.toString()}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className="item-rectangle"
-                            >
-                              <span onClick={() => handleItemClick(index)}>
-                                {item.title}
-                              </span>
-                              <span
-                                className="delete-icon"
-                                onClick={() => handleDeleteClick(index)}
-                              >
-                                🗑️
-                              </span>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            </div>
-          </Col>
-          <Col md={6} className="macos-panel">
-            {/* <p className="macos-text">Some main content</p> */}
-
-            {editingItem !== null && items[editingItem] && (
-              <>
-                <h4 className="macos-section-title">
-                  {items[editingItem].title}
-                </h4>
-                <Container className="large-text-area-container">
-                  <div className="close-button" onClick={handleCloseClick}>
-                    &times;
-                  </div>
-                  {/* <textarea
-  className="col-12 form-control"
-  rows={15}
-  value={items[editingItem].description}
-  // onChange={(e) => setLargeText(e.target.value)}
-  onChange={(e) =>
-    handleDescriptionChange(editingItem, e.target.value)
-  }
-/> */}
-
-                  <Editor
-                    value={items[editingItem].description}
-                    onChange={(e) =>
-                      handleDescriptionChange(editingItem, e.target.value)
+              </Col>
+              <Col md={6} className="macos-panel">
+                {editingItem !== null && items[editingItem] && (
+                  <ItemDetail
+                    item={items[editingItem]}
+                    handleCloseClick={handleCloseClick}
+                    handleDescriptionChange={(newDescription) =>
+                      handleDescriptionChange(editingItem, newDescription)
                     }
                   />
-                </Container>
-              </>
-            )}
-          </Col>
-          {/* <Col md={3} className="macos-panel">
-            <h2 className="macos-section-title">Extra Content</h2>
-            <p className="macos-text">Some extra content</p>
-          </Col> */}
+                )}
+              </Col>
+            </>
+          )}
           {showConfirmDialog && (
-            <div className="confirm-dialog-overlay">
-              <div className="confirm-dialog">
-                <p>Are you sure?</p>
-                <button onClick={handleConfirmDelete}>Yes</button>
-                <button onClick={handleCancelDelete}>No</button>
-              </div>
-            </div>
+            <ConfirmDialog
+              handleConfirmDelete={handleConfirmDelete}
+              handleCancelDelete={handleCancelDelete}
+            />
           )}
         </Row>
       </Container>
-
-      {/* <Container className="justify-content-center vh-100">
-        <Row>
-          <Col
-            className="align-items-center justify-content-center"
-            sm={4}
-          ></Col>
-
-          <Col sm={8}></Col>
-        </Row>
-      </Container> */}
     </div>
   );
 };

@@ -1,0 +1,14 @@
+.large-text-area-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .macos-section-title {
+    font-size: 1.5em;
+    color: #007bff;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ff8c00;
+    padding-bottom: 5px;
+  }
+  

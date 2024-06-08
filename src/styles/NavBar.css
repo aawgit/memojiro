@@ -1,0 +1,14 @@
+.macos-navbar {
+    background-color: #007bff;
+    border-bottom: 1px solid #006fdd;
+    padding-left: 20px; /* Add padding to the left side */
+  }
+  
+  .macos-navbar-brand {
+    color: #ffffff !important;
+  }
+  
+  .macos-navbar .nav-link {
+    color: #ffffff !important;
+  }
+  
