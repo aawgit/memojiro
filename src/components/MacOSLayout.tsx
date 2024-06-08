@@ -1,7 +1,7 @@
 import React from "react";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col } from "react-bootstrap";
-import "../styles/MacOSLayout.css"; // Custom styles
+import "../styles/DesktopLayout.css"; // Custom styles
 
 const MacOSLayout: React.FC = () => {
   return (

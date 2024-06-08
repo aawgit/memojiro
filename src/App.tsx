@@ -8,13 +8,15 @@ import {
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import "./App.css";
+import "./styles/App.css";
 import { Alert } from "react-bootstrap";
 import { setLocal, getLocal } from "./hooks/usePersistentState";
 import NavBarC from "./components/navbar";
 import { analytics } from "../firebaseConfig"; // Import the analytics instance
 import { logEvent } from "firebase/analytics";
 import Editor from "react-simple-wysiwyg";
+
+import "./styles/DesktopLayout.css"; // Custom styles
 
 interface item {
   title: string;
@@ -131,22 +133,38 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <NavBarC></NavBarC>
-      <Alert
-        key="warning"
-        variant="warning"
-        onClose={() => setShow(false)}
-        dismissible
-      >
-        Notes are saved in the browser and will be here next time you open this
-        page, unless browsing history is cleared.
-      </Alert>
-      <Container className="justify-content-center vh-100">
+      <Container fluid className="macos-container">
         <Row>
-          <Col className="align-items-center justify-content-center" sm={4}>
+          {/* <Col>
+            <h1 className="macos-title">Notes</h1>
+          </Col> */}
+          <NavBarC></NavBarC>
+          <Alert
+            key="warning"
+            variant="warning"
+            onClose={() => setShow(false)}
+            dismissible
+          >
+            Notes are saved in the browser and will be here next time you open
+            this page, unless browsing history is cleared.
+          </Alert>
+        </Row>
+        <Row className="macos-content">
+          <Col md={3} className="macos-panel">
+            {/* <h2 className="macos-section-title">Sidebar</h2>
+            <p className="macos-text">Some sidebar content</p> */}
+
             <div className="list-container">
-              <div className="plus-circle" onClick={handleAddClick}>
-                +
+              <div
+                style={{
+                  alignContent: "center",
+                  display: "flex",
+                  width: "100%",
+                }}
+              >
+                <div className="plus-circle" onClick={handleAddClick}>
+                  +
+                </div>
               </div>
               {inputVisible && (
                 <input
@@ -194,39 +212,42 @@ const App: React.FC = () => {
               </DragDropContext>
             </div>
           </Col>
+          <Col md={6} className="macos-panel">
+            {/* <p className="macos-text">Some main content</p> */}
 
-          {editingItem !== null && items[editingItem] && (
-            <Col sm={8}>
-              <Container className="large-text-area-container">
-                <div className="close-button" onClick={handleCloseClick}>
-                  &times;
-                </div>
-                {/* <textarea
-                  className="col-12 form-control"
-                  rows={15}
-                  value={items[editingItem].description}
-                  // onChange={(e) => setLargeText(e.target.value)}
-                  onChange={(e) =>
-                    handleDescriptionChange(editingItem, e.target.value)
-                  }
-                /> */}
+            {editingItem !== null && items[editingItem] && (
+              <>
+                <h4 className="macos-section-title">
+                  {items[editingItem].title}
+                </h4>
+                <Container className="large-text-area-container">
+                  <div className="close-button" onClick={handleCloseClick}>
+                    &times;
+                  </div>
+                  {/* <textarea
+  className="col-12 form-control"
+  rows={15}
+  value={items[editingItem].description}
+  // onChange={(e) => setLargeText(e.target.value)}
+  onChange={(e) =>
+    handleDescriptionChange(editingItem, e.target.value)
+  }
+/> */}
 
-                <Editor
-                  value={items[editingItem].description}
-                  onChange={(e) =>
-                    handleDescriptionChange(editingItem, e.target.value)
-                  }
-                  // onKeyDown={(e) => {
-                  //   if (e.keyCode === 9) {
-                  //     e.preventDefault();
-                  //     console.log(html.substring(0, html.length - 15));
-                  //     setHtml(html + "&nbsp");
-                  //   }
-                  // }}
-                />
-              </Container>
-            </Col>
-          )}
+                  <Editor
+                    value={items[editingItem].description}
+                    onChange={(e) =>
+                      handleDescriptionChange(editingItem, e.target.value)
+                    }
+                  />
+                </Container>
+              </>
+            )}
+          </Col>
+          {/* <Col md={3} className="macos-panel">
+            <h2 className="macos-section-title">Extra Content</h2>
+            <p className="macos-text">Some extra content</p>
+          </Col> */}
           {showConfirmDialog && (
             <div className="confirm-dialog-overlay">
               <div className="confirm-dialog">
@@ -238,6 +259,17 @@ const App: React.FC = () => {
           )}
         </Row>
       </Container>
+
+      {/* <Container className="justify-content-center vh-100">
+        <Row>
+          <Col
+            className="align-items-center justify-content-center"
+            sm={4}
+          ></Col>
+
+          <Col sm={8}></Col>
+        </Row>
+      </Container> */}
     </div>
   );
 };

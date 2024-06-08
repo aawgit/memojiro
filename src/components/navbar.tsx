@@ -3,7 +3,9 @@ const NavBarC: React.FC = () => {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container fluid>
-        <Navbar.Brand href="#">Notes</Navbar.Brand>
+        <Navbar.Brand href="#">
+          <h3>Notes</h3>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
