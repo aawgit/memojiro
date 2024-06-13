@@ -3,9 +3,19 @@
   }
   
   .plus-circle {
-    font-size: 24px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #ff6600;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
     cursor: pointer;
-    color: #007bff;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 40%;
   }
   
   .input-field {
@@ -33,3 +43,27 @@
     color: red;
   }
   
+  .macos-close-button {
+    font-size: 1.5em;
+    color: #ff8c00;
+    background: none;
+    border: none;
+    float: right;
+    cursor: pointer;
+  }
+
+  .macos-textarea {
+    width: 100%;
+    height: 200px;
+    border: none;
+    resize: none;
+    /* margin-top: 10px; */
+  }
+
+  .macos-detail-view {
+    background: linear-gradient(145deg, #d0cdcd, #a6a4a4);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* padding: 20px; */
+    /* margin-top: 10px; */
+  }

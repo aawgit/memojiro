@@ -83,49 +83,53 @@ const ItemList: React.FC<ItemListProps> = ({
           {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {items.map((item, index) => (
-                <Draggable
-                  key={index}
-                  draggableId={index.toString()}
-                  index={index}
-                >
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className="item-rectangle"
-                    >
-                      <span onClick={() => handleItemClick(index)}>
-                        {item.title}
-                      </span>
-                      <span
-                        className="delete-icon"
-                        onClick={() => handleDeleteClick(index)}
+                <>
+                  <Draggable
+                    key={index}
+                    draggableId={index.toString()}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="item-rectangle"
                       >
-                        🗑️
-                      </span>
-                      {editingItem === index &&
-                        handleCloseClick &&
-                        handleDescriptionChange && (
-                          <div className="macos-detail-view">
-                            <button
-                              className="macos-close-button"
-                              onClick={handleCloseClick}
-                            >
-                              &times;
-                            </button>
-                            <textarea
-                              value={item.description}
-                              onChange={(e) =>
-                                handleDescriptionChange(index, e.target.value)
-                              }
-                              className="macos-textarea"
-                            />
-                          </div>
-                        )}
-                    </div>
-                  )}
-                </Draggable>
+                        <span onClick={() => handleItemClick(index)}>
+                          {item.title}
+                        </span>
+                        <span
+                          className="delete-icon"
+                          onClick={() => handleDeleteClick(index)}
+                        >
+                          🗑️
+                        </span>
+                      </div>
+                    )}
+                  </Draggable>
+                  <div>
+                    {editingItem === index &&
+                      handleCloseClick &&
+                      handleDescriptionChange && (
+                        <div>
+                          <button
+                            className="macos-close-button"
+                            onClick={handleCloseClick}
+                          >
+                            &times;
+                          </button>
+                          <textarea
+                            value={item.description}
+                            onChange={(e) =>
+                              handleDescriptionChange(index, e.target.value)
+                            }
+                            className="macos-textarea"
+                          />
+                        </div>
+                      )}
+                  </div>
+                </>
               ))}
               {provided.placeholder}
             </div>

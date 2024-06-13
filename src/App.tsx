@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 import Alert from "react-bootstrap/Alert";
 import { useMediaQuery } from "react-responsive";
 import { logEvent } from "firebase/analytics";
@@ -114,55 +116,59 @@ const App: React.FC = () => {
             this page, unless browsing history is cleared.
           </Alert>
         </Row>
-        <Row className="macos-content">
-          {isMobile ? (
-            <Col className="macos-panel">
-              <ItemList
-                items={items}
-                inputVisible={inputVisible}
-                handleAddClick={handleAddClick}
-                handleInputKeyDown={handleInputKeyDown}
-                handleItemClick={handleItemClick}
-                handleDeleteClick={handleDeleteClick}
-                setItems={setItems} // Add this line
-                editingItem={editingItem}
-                handleCloseClick={handleCloseClick}
-                handleDescriptionChange={handleDescriptionChange}
-              />
-            </Col>
-          ) : (
-            <>
-              <Col md={3} className="macos-panel">
-                <ItemList
-                  items={items}
-                  inputVisible={inputVisible}
-                  handleAddClick={handleAddClick}
-                  handleInputKeyDown={handleInputKeyDown}
-                  handleItemClick={handleItemClick}
-                  handleDeleteClick={handleDeleteClick}
-                  setItems={setItems} // Add this line
-                />
-              </Col>
-              <Col md={6} className="macos-panel">
-                {editingItem !== null && items[editingItem] && (
-                  <ItemDetail
-                    item={items[editingItem]}
+        <Tabs>
+          <Tab eventKey="home" title="Home">
+            <Row className="macos-content">
+              {isMobile ? (
+                <Col>
+                  <ItemList
+                    items={items}
+                    inputVisible={inputVisible}
+                    handleAddClick={handleAddClick}
+                    handleInputKeyDown={handleInputKeyDown}
+                    handleItemClick={handleItemClick}
+                    handleDeleteClick={handleDeleteClick}
+                    setItems={setItems} // Add this line
+                    editingItem={editingItem}
                     handleCloseClick={handleCloseClick}
-                    handleDescriptionChange={(newDescription) =>
-                      handleDescriptionChange(editingItem, newDescription)
-                    }
+                    handleDescriptionChange={handleDescriptionChange}
                   />
-                )}
-              </Col>
-            </>
-          )}
-          {showConfirmDialog && (
-            <ConfirmDialog
-              handleConfirmDelete={handleConfirmDelete}
-              handleCancelDelete={handleCancelDelete}
-            />
-          )}
-        </Row>
+                </Col>
+              ) : (
+                <>
+                  <Col md={3} className="macos-panel">
+                    <ItemList
+                      items={items}
+                      inputVisible={inputVisible}
+                      handleAddClick={handleAddClick}
+                      handleInputKeyDown={handleInputKeyDown}
+                      handleItemClick={handleItemClick}
+                      handleDeleteClick={handleDeleteClick}
+                      setItems={setItems} // Add this line
+                    />
+                  </Col>
+                  <Col md={6} className="macos-panel">
+                    {editingItem !== null && items[editingItem] && (
+                      <ItemDetail
+                        item={items[editingItem]}
+                        handleCloseClick={handleCloseClick}
+                        handleDescriptionChange={(newDescription) =>
+                          handleDescriptionChange(editingItem, newDescription)
+                        }
+                      />
+                    )}
+                  </Col>
+                </>
+              )}
+              {showConfirmDialog && (
+                <ConfirmDialog
+                  handleConfirmDelete={handleConfirmDelete}
+                  handleCancelDelete={handleCancelDelete}
+                />
+              )}
+            </Row>
+          </Tab>
+        </Tabs>
       </Container>
     </div>
   );
