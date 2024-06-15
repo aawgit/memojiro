@@ -4,8 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { Button, Modal, Form } from "react-bootstrap";
-import Alert from "react-bootstrap/Alert";
+import { Button, Modal, Form, Alert } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../firebaseConfig";
@@ -42,25 +41,26 @@ const App: React.FC = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
-  const [items, setItems] = useState<Item[]>(() => {
-    // Load state from localStorage if available
-    const savedItems = getLocal("items");
-    return savedItems ? savedItems : [];
-  });
-
-  // TODO: If not tab data, load the items in the storage to default tab
+  // Initialize tabData from local storage or default value
   const [tabData, setTabData] = useState<TabData>(() => {
     const savedData = getLocal("tabData");
     return savedData
       ? JSON.parse(savedData)
-      : { 0: { name: "Home", items: items } };
+      : {
+          "0": {
+            name: "Home",
+            items: [],
+            tabNameEditable: false,
+          },
+        };
   });
-  const [currentTab, setCurrentTab] = useState(0);
 
-  // Save state to localStorage whenever it changes
+  const [currentTab, setCurrentTab] = useState<string>("0");
+
+  // Save tabData to local storage whenever it changes
   useEffect(() => {
-    setLocal("items", items);
-  }, [items]);
+    setLocal("tabData", JSON.stringify(tabData));
+  }, [tabData]);
 
   const handleAddClick = () => {
     setInputVisible(true);
@@ -71,20 +71,27 @@ const App: React.FC = () => {
       e.key === "Enter" &&
       (e.target as HTMLInputElement).value.trim() !== ""
     ) {
-      setItems([
-        ...items,
+      const newItems = [
+        ...tabData[currentTab].items,
         { title: (e.target as HTMLInputElement).value, description: "" },
-      ]);
+      ];
+      setTabData({
+        ...tabData,
+        [currentTab]: { ...tabData[currentTab], items: newItems },
+      });
       setInputVisible(false);
       (e.target as HTMLInputElement).value = "";
     }
   };
 
   const handleDescriptionChange = (index: number, newDescription: string) => {
-    const updatedItems = items.map((item, i) =>
+    const updatedItems = tabData[currentTab].items.map((item, i) =>
       i === index ? { ...item, description: newDescription } : item
     );
-    setItems(updatedItems);
+    setTabData({
+      ...tabData,
+      [currentTab]: { ...tabData[currentTab], items: updatedItems },
+    });
   };
 
   const handleItemClick = (index: number) => {
@@ -102,8 +109,13 @@ const App: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete !== null) {
-      const newItems = items.filter((_, i) => i !== itemToDelete);
-      setItems(newItems);
+      const newItems = tabData[currentTab].items.filter(
+        (_, i) => i !== itemToDelete
+      );
+      setTabData({
+        ...tabData,
+        [currentTab]: { ...tabData[currentTab], items: newItems },
+      });
       setShowConfirmDialog(false);
       setItemToDelete(null);
       setEditingItem(null);
@@ -116,26 +128,23 @@ const App: React.FC = () => {
   };
 
   const handleAddTab = () => {
-    const newTabId = Object.keys(tabData).length;
-    // name: `Tab ${tabs.length + 1}`,
-    // content: `This is Tab ${tabs.length + 1}`
+    const newTabId = Object.keys(tabData).length.toString();
     setTabData({
       ...tabData,
       [newTabId]: { name: "New tab", items: [], tabNameEditable: true },
     });
-    return String(newTabId);
+    setCurrentTab(newTabId);
   };
 
   const handleDoubleClick = (key: string) => {
-    let id = "";
     if (key === "<placeholder>") {
-      id = handleAddTab();
-    } else id = key;
-    setTabData({
-      ...tabData,
-      [id]: { ...tabData[id], tabNameEditable: true },
-    });
-    console.log(`created new tab ${JSON.stringify(tabData)}`);
+      handleAddTab();
+    } else {
+      setTabData({
+        ...tabData,
+        [key]: { ...tabData[key], tabNameEditable: true },
+      });
+    }
   };
 
   const handleBlur = (key: string, name: string) => {
@@ -162,6 +171,13 @@ const App: React.FC = () => {
     });
   };
 
+  const setItems = (items: Item[]) => {
+    setTabData({
+      ...tabData,
+      [currentTab]: { ...tabData[currentTab], items },
+    });
+  };
+
   return (
     <div>
       <Container fluid className="macos-container">
@@ -181,7 +197,7 @@ const App: React.FC = () => {
         <Tabs
           id="controlled-tab-example"
           activeKey={currentTab}
-          onSelect={(k) => setCurrentTab(Number(k) || 0)}
+          onSelect={(k) => setCurrentTab(k || "0")}
         >
           {Object.keys(tabData).map((tabKey) => (
             <Tab
@@ -204,6 +220,7 @@ const App: React.FC = () => {
                   </span>
                 )
               }
+              key={tabKey}
             >
               <Row className="macos-content">
                 {isMobile ? (
@@ -235,15 +252,19 @@ const App: React.FC = () => {
                       />
                     </Col>
                     <Col md={6} className="macos-panel">
-                      {editingItem !== null && items[editingItem] && (
-                        <ItemDetail
-                          item={items[editingItem]}
-                          handleCloseClick={handleCloseClick}
-                          handleDescriptionChange={(newDescription) =>
-                            handleDescriptionChange(editingItem, newDescription)
-                          }
-                        />
-                      )}
+                      {editingItem !== null &&
+                        tabData[tabKey].items[editingItem] && (
+                          <ItemDetail
+                            item={tabData[tabKey].items[editingItem]}
+                            handleCloseClick={handleCloseClick}
+                            handleDescriptionChange={(newDescription) =>
+                              handleDescriptionChange(
+                                editingItem,
+                                newDescription
+                              )
+                            }
+                          />
+                        )}
                     </Col>
                   </>
                 )}
@@ -263,7 +284,7 @@ const App: React.FC = () => {
                 +
               </span>
             }
-          ></Tab>
+          />
         </Tabs>
       </Container>
     </div>
