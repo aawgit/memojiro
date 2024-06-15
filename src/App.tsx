@@ -4,6 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import { Button, Modal, Form } from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import { useMediaQuery } from "react-responsive";
 import { logEvent } from "firebase/analytics";
@@ -22,13 +23,11 @@ interface Item {
   description: string;
 }
 
-const App: React.FC = () => {
-  const [inputVisible, setInputVisible] = useState(false);
-  const [show, setShow] = useState(true);
-  const [editingItem, setEditingItem] = useState<number | null>(null);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+interface TabData {
+  [key: string]: { name: string; items: Item[]; tabNameEditable: boolean };
+}
 
+const App: React.FC = () => {
   // Determine if the screen size is mobile
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
@@ -37,11 +36,26 @@ const App: React.FC = () => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
 
+  const [inputVisible, setInputVisible] = useState(false);
+  const [show, setShow] = useState(true);
+  const [editingItem, setEditingItem] = useState<number | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
   const [items, setItems] = useState<Item[]>(() => {
     // Load state from localStorage if available
     const savedItems = getLocal("items");
     return savedItems ? savedItems : [];
   });
+
+  // TODO: If not tab data, load the items in the storage to default tab
+  const [tabData, setTabData] = useState<TabData>(() => {
+    const savedData = getLocal("tabData");
+    return savedData
+      ? JSON.parse(savedData)
+      : { 0: { name: "Home", items: items } };
+  });
+  const [currentTab, setCurrentTab] = useState(0);
 
   // Save state to localStorage whenever it changes
   useEffect(() => {
@@ -101,6 +115,53 @@ const App: React.FC = () => {
     setItemToDelete(null);
   };
 
+  const handleAddTab = () => {
+    const newTabId = Object.keys(tabData).length;
+    // name: `Tab ${tabs.length + 1}`,
+    // content: `This is Tab ${tabs.length + 1}`
+    setTabData({
+      ...tabData,
+      [newTabId]: { name: "New tab", items: [], tabNameEditable: true },
+    });
+    return String(newTabId);
+  };
+
+  const handleDoubleClick = (key: string) => {
+    let id = "";
+    if (key === "<placeholder>") {
+      id = handleAddTab();
+    } else id = key;
+    setTabData({
+      ...tabData,
+      [id]: { ...tabData[id], tabNameEditable: true },
+    });
+    console.log(`created new tab ${JSON.stringify(tabData)}`);
+  };
+
+  const handleBlur = (key: string, name: string) => {
+    setTabData({
+      ...tabData,
+      [key]: { ...tabData[key], name, tabNameEditable: false },
+    });
+  };
+
+  const handleKeyPress = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    key: string,
+    name: string
+  ) => {
+    if (e.key === "Enter") {
+      handleBlur(key, name);
+    }
+  };
+
+  const handleTitleChange = (key: string, newName: string) => {
+    setTabData({
+      ...tabData,
+      [key]: { ...tabData[key], name: newName },
+    });
+  };
+
   return (
     <div>
       <Container fluid className="macos-container">
@@ -116,58 +177,93 @@ const App: React.FC = () => {
             this page, unless browsing history is cleared.
           </Alert>
         </Row>
-        <Tabs>
-          <Tab eventKey="home" title="Home">
-            <Row className="macos-content">
-              {isMobile ? (
-                <Col>
-                  <ItemList
-                    items={items}
-                    inputVisible={inputVisible}
-                    handleAddClick={handleAddClick}
-                    handleInputKeyDown={handleInputKeyDown}
-                    handleItemClick={handleItemClick}
-                    handleDeleteClick={handleDeleteClick}
-                    setItems={setItems} // Add this line
-                    editingItem={editingItem}
-                    handleCloseClick={handleCloseClick}
-                    handleDescriptionChange={handleDescriptionChange}
+
+        <Tabs
+          id="controlled-tab-example"
+          activeKey={currentTab}
+          onSelect={(k) => setCurrentTab(Number(k) || 0)}
+        >
+          {Object.keys(tabData).map((tabKey) => (
+            <Tab
+              eventKey={tabKey}
+              title={
+                tabData[tabKey].tabNameEditable ? (
+                  <input
+                    type="text"
+                    value={tabData[tabKey].name}
+                    autoFocus
+                    onChange={(e) => handleTitleChange(tabKey, e.target.value)}
+                    onBlur={(e) => handleBlur(tabKey, e.target.value)}
+                    onKeyPress={(e) =>
+                      handleKeyPress(e, tabKey, e.target.value)
+                    }
                   />
-                </Col>
-              ) : (
-                <>
-                  <Col md={3} className="macos-panel">
+                ) : (
+                  <span onDoubleClick={() => handleDoubleClick(tabKey)}>
+                    {tabData[tabKey].name}
+                  </span>
+                )
+              }
+            >
+              <Row className="macos-content">
+                {isMobile ? (
+                  <Col>
                     <ItemList
-                      items={items}
+                      items={tabData[tabKey].items}
                       inputVisible={inputVisible}
                       handleAddClick={handleAddClick}
                       handleInputKeyDown={handleInputKeyDown}
                       handleItemClick={handleItemClick}
                       handleDeleteClick={handleDeleteClick}
                       setItems={setItems} // Add this line
+                      editingItem={editingItem}
+                      handleCloseClick={handleCloseClick}
+                      handleDescriptionChange={handleDescriptionChange}
                     />
                   </Col>
-                  <Col md={6} className="macos-panel">
-                    {editingItem !== null && items[editingItem] && (
-                      <ItemDetail
-                        item={items[editingItem]}
-                        handleCloseClick={handleCloseClick}
-                        handleDescriptionChange={(newDescription) =>
-                          handleDescriptionChange(editingItem, newDescription)
-                        }
+                ) : (
+                  <>
+                    <Col md={3} className="macos-panel">
+                      <ItemList
+                        items={tabData[tabKey].items}
+                        inputVisible={inputVisible}
+                        handleAddClick={handleAddClick}
+                        handleInputKeyDown={handleInputKeyDown}
+                        handleItemClick={handleItemClick}
+                        handleDeleteClick={handleDeleteClick}
+                        setItems={setItems} // Add this line
                       />
-                    )}
-                  </Col>
-                </>
-              )}
-              {showConfirmDialog && (
-                <ConfirmDialog
-                  handleConfirmDelete={handleConfirmDelete}
-                  handleCancelDelete={handleCancelDelete}
-                />
-              )}
-            </Row>
-          </Tab>
+                    </Col>
+                    <Col md={6} className="macos-panel">
+                      {editingItem !== null && items[editingItem] && (
+                        <ItemDetail
+                          item={items[editingItem]}
+                          handleCloseClick={handleCloseClick}
+                          handleDescriptionChange={(newDescription) =>
+                            handleDescriptionChange(editingItem, newDescription)
+                          }
+                        />
+                      )}
+                    </Col>
+                  </>
+                )}
+                {showConfirmDialog && (
+                  <ConfirmDialog
+                    handleConfirmDelete={handleConfirmDelete}
+                    handleCancelDelete={handleCancelDelete}
+                  />
+                )}
+              </Row>
+            </Tab>
+          ))}
+          <Tab
+            eventKey="<placeholder>"
+            title={
+              <span onDoubleClick={() => handleDoubleClick("<placeholder>")}>
+                +
+              </span>
+            }
+          ></Tab>
         </Tabs>
       </Container>
     </div>

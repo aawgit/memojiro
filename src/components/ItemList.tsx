@@ -82,7 +82,7 @@ const ItemList: React.FC<ItemListProps> = ({
         <Droppable droppableId="droppable">
           {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
-              {items.map((item, index) => (
+              {items?.map((item, index) => (
                 <>
                   <Draggable
                     key={index}

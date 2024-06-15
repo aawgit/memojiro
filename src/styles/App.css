@@ -12,7 +12,7 @@
 }
 
 .macos-panel {
-  background: linear-gradient(145deg, #d0cdcd, #a6a4a4);
+  background: #b2afaf;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -32,3 +32,5 @@
   font-size: 1em;
   color: #666;
 }
+
+
