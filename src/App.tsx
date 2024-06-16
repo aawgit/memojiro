@@ -45,11 +45,11 @@ const App: React.FC = () => {
   const [tabData, setTabData] = useState<TabData>(() => {
     const savedData = getLocal("tabData");
     return savedData
-      ? JSON.parse(savedData)
+      ? savedData
       : {
           "0": {
             name: "Home",
-            items: [],
+            items: getLocal("items") ? getLocal("items") : [],
             tabNameEditable: false,
           },
         };
@@ -59,7 +59,7 @@ const App: React.FC = () => {
 
   // Save tabData to local storage whenever it changes
   useEffect(() => {
-    setLocal("tabData", JSON.stringify(tabData));
+    setLocal("tabData", tabData);
   }, [tabData]);
 
   const handleAddClick = () => {
