@@ -13,6 +13,8 @@ import NavBarC from "./components/NavBar";
 import ItemList from "./components/ItemList";
 import ItemDetail from "./components/ItemDetail";
 import ConfirmDialog from "./components/ConfirmDialog";
+import { useAuth } from "./hooks/useAuth";
+import { useFirestore } from "./hooks/useFirestore";
 import "./styles/App.css";
 import "./styles/DesktopLayout.css";
 import "./styles/MobileLayout.css";
@@ -20,10 +22,8 @@ import "./styles/MobileLayout.css";
 interface Item {
   title: string;
   description: string;
-}
-
-interface TabData {
-  [key: string]: { name: string; items: Item[]; tabNameEditable: boolean };
+  itemId: string;
+  priority: number;
 }
 
 const App: React.FC = () => {
@@ -34,6 +34,10 @@ const App: React.FC = () => {
   useEffect(() => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
+  const { user } = useAuth();
+  const { tabData, setTabData, addItem, deleteItem, updateItem } = useFirestore(
+    user?.uid || null
+  );
 
   const [inputVisible, setInputVisible] = useState(false);
   const [show, setShow] = useState(true);
@@ -41,25 +45,11 @@ const App: React.FC = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
-  // Initialize tabData from local storage or default value
-  const [tabData, setTabData] = useState<TabData>(() => {
-    const savedData = getLocal("tabData");
-    return savedData
-      ? savedData
-      : {
-          "0": {
-            name: "Home",
-            items: getLocal("items") ? getLocal("items") : [],
-            tabNameEditable: false,
-          },
-        };
-  });
-
   const [currentTab, setCurrentTab] = useState<string>("0");
 
   // Save tabData to local storage whenever it changes
   useEffect(() => {
-    setLocal("tabData", tabData);
+    if (!user) setLocal("tabData", tabData);
   }, [tabData]);
 
   const handleAddClick = () => {
@@ -71,14 +61,7 @@ const App: React.FC = () => {
       e.key === "Enter" &&
       (e.target as HTMLInputElement).value.trim() !== ""
     ) {
-      const newItems = [
-        ...tabData[currentTab].items,
-        { title: (e.target as HTMLInputElement).value, description: "" },
-      ];
-      setTabData({
-        ...tabData,
-        [currentTab]: { ...tabData[currentTab], items: newItems },
-      });
+      addItem(currentTab, (e.target as HTMLInputElement).value);
       setInputVisible(false);
       (e.target as HTMLInputElement).value = "";
     }
@@ -109,13 +92,12 @@ const App: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete !== null) {
-      const newItems = tabData[currentTab].items.filter(
-        (_, i) => i !== itemToDelete
+      console.log(tabData[currentTab].items[itemToDelete]);
+      deleteItem(
+        currentTab,
+        itemToDelete,
+        tabData[currentTab].items[itemToDelete].itemId
       );
-      setTabData({
-        ...tabData,
-        [currentTab]: { ...tabData[currentTab], items: newItems },
-      });
       setShowConfirmDialog(false);
       setItemToDelete(null);
       setEditingItem(null);
@@ -178,6 +160,15 @@ const App: React.FC = () => {
     });
   };
 
+  const saveOnCloud = async (description: string) => {
+    if (editingItem && tabData[currentTab].items[editingItem].itemId != null)
+      await updateItem(
+        currentTab,
+        tabData[currentTab].items[editingItem].itemId,
+        description
+      );
+  };
+
   return (
     <div>
       <Container fluid className="macos-container">
@@ -232,10 +223,12 @@ const App: React.FC = () => {
                       handleInputKeyDown={handleInputKeyDown}
                       handleItemClick={handleItemClick}
                       handleDeleteClick={handleDeleteClick}
-                      setItems={setItems} // Add this line
+                      setItems={setItems}
                       editingItem={editingItem}
                       handleCloseClick={handleCloseClick}
                       handleDescriptionChange={handleDescriptionChange}
+                      saveOnCloud={saveOnCloud}
+                      loggedIn={user ? true : false}
                     />
                   </Col>
                 ) : (
@@ -248,7 +241,7 @@ const App: React.FC = () => {
                         handleInputKeyDown={handleInputKeyDown}
                         handleItemClick={handleItemClick}
                         handleDeleteClick={handleDeleteClick}
-                        setItems={setItems} // Add this line
+                        setItems={setItems}
                       />
                     </Col>
                     <Col md={6} className="macos-panel">
@@ -263,6 +256,8 @@ const App: React.FC = () => {
                                 newDescription
                               )
                             }
+                            saveOnCloud={saveOnCloud}
+                            loggedIn={user ? true : false}
                           />
                         )}
                     </Col>

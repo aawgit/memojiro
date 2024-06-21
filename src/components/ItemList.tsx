@@ -6,6 +6,7 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import "../styles/ItemList.css"; // Create this file for ItemList specific styles
+import ItemDetail from "./ItemDetail";
 
 interface Item {
   title: string;
@@ -23,6 +24,8 @@ interface ItemListProps {
   editingItem?: number | null;
   handleCloseClick?: () => void;
   handleDescriptionChange?: (index: number, newDescription: string) => void;
+  saveOnCloud: (newDescription: string) => void; // New prop for saving to cloud
+  loggedIn: boolean;
 }
 
 const reorder = (
@@ -48,6 +51,8 @@ const ItemList: React.FC<ItemListProps> = ({
   editingItem,
   handleCloseClick,
   handleDescriptionChange,
+  saveOnCloud,
+  loggedIn,
 }) => {
   const onDragEnd = (result: DropResult): void => {
     // Dropped outside the list
@@ -119,12 +124,17 @@ const ItemList: React.FC<ItemListProps> = ({
                           >
                             &times;
                           </button>
-                          <textarea
-                            value={item.description}
-                            onChange={(e) =>
-                              handleDescriptionChange(index, e.target.value)
+                          <ItemDetail
+                            item={item}
+                            handleCloseClick={handleCloseClick}
+                            handleDescriptionChange={(newDescription) =>
+                              handleDescriptionChange(
+                                editingItem,
+                                newDescription
+                              )
                             }
-                            className="macos-textarea"
+                            saveOnCloud={saveOnCloud}
+                            loggedIn={loggedIn}
                           />
                         </div>
                       )}

@@ -1,4 +1,5 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
+import AuthButton from "./AuthButton";
 const NavBarC: React.FC = () => {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
@@ -7,12 +8,10 @@ const NavBarC: React.FC = () => {
           <h3>Notes</h3>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
-        <Navbar.Collapse id="navbarScroll">
-          <Nav
-            className="me-auto my-2 my-lg-0"
-            style={{ maxHeight: "100px" }}
-            navbarScroll
-          ></Nav>
+        <Navbar.Collapse id="navbarScroll" className="justify-content-end">
+          <Nav>
+            <AuthButton />
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
