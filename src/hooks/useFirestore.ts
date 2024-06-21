@@ -116,27 +116,43 @@ export const useFirestore = (userId: string | null) => {
   }, [userId]);
 
   const addItem = async (tabId: string, title: string) => {
-    let id = null;
-    if (userId && tabData[tabId]) {
-      const itemDocRef = await addDoc(collection(db, "notes"), {
-        userId,
-        tabId: tabId,
-        tabName: tabData[tabId].name,
-        noteTitle: title,
-      });
-      id = itemDocRef.id;
-    }
-    const newItems = [
-      { title: title, description: "", itemId: id },
-      ...tabData[tabId].items,
-    ];
-    // TODO: Handle latency
+    // Create a temporary item without an itemId
+    const tempItem = { title, description: "", itemId: null };
+    const newItems = [tempItem, ...tabData[tabId].items];
 
+    // Update the state with the temporary item
     setTabData({
       ...tabData,
       [tabId]: { ...tabData[tabId], items: newItems },
     });
-    if (userId) updateNotesOrder(userId, tabId, newItems);
+
+    // Add the new item to Firestore and get the itemId
+    if (userId && tabData[tabId]) {
+      try {
+        const itemDocRef = await addDoc(collection(db, "notes"), {
+          userId,
+          tabId: tabId,
+          tabName: tabData[tabId].name,
+          noteTitle: title,
+        });
+        const id = itemDocRef.id;
+
+        // Update the state with the received itemId
+        const updatedItems = newItems.map((item) =>
+          item === tempItem ? { ...item, itemId: id } : item
+        );
+
+        setTabData({
+          ...tabData,
+          [tabId]: { ...tabData[tabId], items: updatedItems },
+        });
+
+        // Update the notes order in Firestore
+        if (userId) updateNotesOrder(userId, tabId, updatedItems);
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
+    }
   };
 
   const updateItem = async (
@@ -252,8 +268,6 @@ export const useFirestore = (userId: string | null) => {
         },
         { merge: true }
       );
-
-      console.log("Notes order updated successfully.");
     } catch (error) {
       console.error("Error updating notes order: ", error);
     }

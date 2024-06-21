@@ -69,6 +69,7 @@ const App: React.FC = () => {
       addItem(currentTab, (e.target as HTMLInputElement).value);
       setInputVisible(false);
       (e.target as HTMLInputElement).value = "";
+      setEditingItem(null);
     }
   };
 
@@ -167,12 +168,20 @@ const App: React.FC = () => {
   };
 
   const saveOnCloud = async (description: string) => {
-    if (editingItem && tabData[currentTab].items[editingItem].itemId != null)
-      await updateItem(
-        currentTab,
-        tabData[currentTab].items[editingItem].itemId,
-        description
-      );
+    console.log(
+      `updating item ${tabData[currentTab].items[editingItem].itemId} ${editingItem}`
+    );
+    if (
+      editingItem != null &&
+      tabData[currentTab].items[editingItem].itemId != null
+    )
+      console.log(`updating item next step...`);
+    await updateItem(
+      currentTab,
+      tabData[currentTab].items[editingItem].itemId,
+      description
+    );
+    console.log(`updated item`);
   };
 
   return (
