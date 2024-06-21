@@ -8,6 +8,7 @@ import {
   query,
   where,
   deleteDoc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { getLocal } from "./usePersistentState";
@@ -22,7 +23,12 @@ interface TabData {
   [key: string]: { name: string; items: Item[]; tabNameEditable: boolean };
 }
 
+interface NotesOrder {
+  [key: string]: string[];
+}
+
 export const useFirestore = (userId: string | null) => {
+  const [notesOrder, setNotesOrder] = useState<NotesOrder>({});
   // Initialize tabData from local storage or default value
   const [tabData, setTabData] = useState<TabData>(() => {
     const savedData = getLocal("tabData");
@@ -105,6 +111,7 @@ export const useFirestore = (userId: string | null) => {
       };
 
       fetchTabsAndItems();
+      fetchAllNotesOrder(userId);
     }
   }, [userId]);
 
@@ -120,14 +127,16 @@ export const useFirestore = (userId: string | null) => {
       id = itemDocRef.id;
     }
     const newItems = [
-      ...tabData[tabId].items,
       { title: title, description: "", itemId: id },
+      ...tabData[tabId].items,
     ];
+    // TODO: Handle latency
 
     setTabData({
       ...tabData,
       [tabId]: { ...tabData[tabId], items: newItems },
     });
+    if (userId) updateNotesOrder(userId, tabId, newItems);
   };
 
   const updateItem = async (
@@ -175,5 +184,87 @@ export const useFirestore = (userId: string | null) => {
     }
   };
 
-  return { tabData, addItem, setTabData, deleteItem, updateItem };
+  const fetchAllNotesOrder = async (userId: string) => {
+    try {
+      const notesOrderQuery = query(
+        collection(db, "note_order"),
+        where("userId", "==", userId)
+      );
+      const querySnapshot = await getDocs(notesOrderQuery);
+
+      const fetchedNotesOrder: NotesOrder = {};
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const tabId = data.tabId;
+        fetchedNotesOrder[tabId] = data.order;
+      });
+
+      setNotesOrder(fetchedNotesOrder);
+    } catch (error) {
+      console.error("Error fetching notes order: ", error);
+    }
+  };
+
+  useEffect(() => {
+    const reorderItems = () => {
+      const updatedTabData = { ...tabData };
+
+      Object.keys(notesOrder).forEach((tabId) => {
+        if (updatedTabData[tabId]) {
+          const orderedItems = notesOrder[tabId]
+            .map((itemId) =>
+              updatedTabData[tabId].items.find((item) => item.itemId === itemId)
+            )
+            .filter((item) => item !== undefined) as Item[];
+
+          // Handle items not in notesOrder
+          const unorderedItems = updatedTabData[tabId].items.filter(
+            (item) => !notesOrder[tabId].includes(item.itemId!)
+          );
+
+          updatedTabData[tabId].items = [...orderedItems, ...unorderedItems];
+        }
+      });
+
+      setTabData(updatedTabData);
+    };
+
+    if (Object.keys(notesOrder).length > 0) {
+      reorderItems();
+    }
+  }, [notesOrder]);
+
+  const updateNotesOrder = async (
+    userId: string,
+    tabId: string,
+    items: Item[]
+  ) => {
+    try {
+      const order = items.map((item) => item.itemId);
+      const orderDocRef = doc(db, "note_order", `${userId}_${tabId}`);
+
+      await setDoc(
+        orderDocRef,
+        {
+          userId,
+          tabId,
+          order,
+        },
+        { merge: true }
+      );
+
+      console.log("Notes order updated successfully.");
+    } catch (error) {
+      console.error("Error updating notes order: ", error);
+    }
+  };
+
+  return {
+    tabData,
+    addItem,
+    setTabData,
+    deleteItem,
+    updateItem,
+    updateNotesOrder,
+  };
 };

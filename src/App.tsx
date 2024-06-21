@@ -35,9 +35,14 @@ const App: React.FC = () => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
   const { user } = useAuth();
-  const { tabData, setTabData, addItem, deleteItem, updateItem } = useFirestore(
-    user?.uid || null
-  );
+  const {
+    tabData,
+    setTabData,
+    addItem,
+    deleteItem,
+    updateItem,
+    updateNotesOrder,
+  } = useFirestore(user?.uid || null);
 
   const [inputVisible, setInputVisible] = useState(false);
   const [show, setShow] = useState(true);
@@ -158,6 +163,7 @@ const App: React.FC = () => {
       ...tabData,
       [currentTab]: { ...tabData[currentTab], items },
     });
+    if (user) updateNotesOrder(user.uid, currentTab, items);
   };
 
   const saveOnCloud = async (description: string) => {
