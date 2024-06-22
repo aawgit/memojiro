@@ -4,11 +4,11 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { Button, Modal, Form, Alert } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../firebaseConfig";
-import { getLocal, setLocal } from "./hooks/usePersistentState";
+import { setLocal } from "./hooks/usePersistentState";
 import NavBarC from "./components/NavBar";
 import ItemList from "./components/ItemList";
 import ItemDetail from "./components/ItemDetail";
@@ -23,7 +23,6 @@ interface Item {
   title: string;
   description: string;
   itemId: string;
-  priority: number;
 }
 
 const App: React.FC = () => {
@@ -45,7 +44,7 @@ const App: React.FC = () => {
   } = useFirestore(user?.uid || null);
 
   const [inputVisible, setInputVisible] = useState(false);
-  const [show, setShow] = useState(true);
+  // const [_, setShow] = useState(true);
   const [editingItem, setEditingItem] = useState<number | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
@@ -59,18 +58,6 @@ const App: React.FC = () => {
 
   const handleAddClick = () => {
     setInputVisible(true);
-  };
-
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (
-      e.key === "Enter" &&
-      (e.target as HTMLInputElement).value.trim() !== ""
-    ) {
-      addItem(currentTab, (e.target as HTMLInputElement).value);
-      setInputVisible(false);
-      (e.target as HTMLInputElement).value = "";
-      setEditingItem(null);
-    }
   };
 
   const handleDescriptionChange = (index: number, newDescription: string) => {
@@ -98,14 +85,13 @@ const App: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete !== null) {
-      deleteItem(
-        currentTab,
-        itemToDelete,
-        tabData[currentTab].items[itemToDelete].itemId
-      );
-      setShowConfirmDialog(false);
-      setItemToDelete(null);
-      setEditingItem(null);
+      const itemId = tabData[currentTab].items[itemToDelete].itemId;
+      if (itemId) {
+        deleteItem(currentTab, itemToDelete, itemId);
+        setShowConfirmDialog(false);
+        setItemToDelete(null);
+        setEditingItem(null);
+      }
     }
   };
 
@@ -151,6 +137,18 @@ const App: React.FC = () => {
     }
   };
 
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      e.key === "Enter" &&
+      (e.target as HTMLInputElement).value.trim() !== ""
+    ) {
+      addItem(currentTab, (e.target as HTMLInputElement).value);
+      setInputVisible(false);
+      (e.target as HTMLInputElement).value = "";
+      setEditingItem(null);
+    }
+  };
+
   const handleTitleChange = (key: string, newName: string) => {
     setTabData({
       ...tabData,
@@ -167,15 +165,10 @@ const App: React.FC = () => {
   };
 
   const saveOnCloud = async (description: string) => {
-    if (
-      editingItem != null &&
-      tabData[currentTab].items[editingItem].itemId != null
-    )
-    await updateItem(
-      currentTab,
-      tabData[currentTab].items[editingItem].itemId,
-      description
-    );
+    if (editingItem != null) {
+      const itemId = tabData[currentTab].items[editingItem].itemId;
+      if (itemId) await updateItem(currentTab, itemId, description);
+    }
   };
 
   return (
@@ -183,22 +176,25 @@ const App: React.FC = () => {
       <Container fluid>
         <Row>
           <NavBarC />
-          {!user && (<Alert
-            key="warning"
-            variant="warning"
-            onClose={() => setShow(false)}
-            dismissible
-          >
-            Notes are saved in the browser and will be available the next time you open this page unless the browsing history is cleared. We recommend logging in to save your notes to the cloud for access from all your devices. It's free.
-          </Alert>)}
-          
+          {!user && (
+            <Alert
+              key="warning"
+              variant="warning"
+              // onClose={() => setShow(false)}
+              dismissible
+            >
+              Notes are saved in the browser and will be available the next time
+              you open this page unless the browsing history is cleared. We
+              recommend logging in to save your notes to the cloud for access
+              from all your devices. It's free.
+            </Alert>
+          )}
         </Row>
 
         <Tabs
           id="controlled-tab-example"
           activeKey={currentTab}
           onSelect={(k) => setCurrentTab(k || "0")}
-          
         >
           {Object.keys(tabData).map((tabKey) => (
             <Tab
@@ -211,7 +207,8 @@ const App: React.FC = () => {
                     autoFocus
                     onChange={(e) => handleTitleChange(tabKey, e.target.value)}
                     onBlur={(e) => handleBlur(tabKey, e.target.value)}
-                    onKeyPress={(e) =>
+                    onKeyDown={(e) =>
+                      //@ts-ignore
                       handleKeyPress(e, tabKey, e.target.value)
                     }
                   />
@@ -233,6 +230,7 @@ const App: React.FC = () => {
                       handleInputKeyDown={handleInputKeyDown}
                       handleItemClick={handleItemClick}
                       handleDeleteClick={handleDeleteClick}
+                      //@ts-ignore
                       setItems={setItems}
                       editingItem={editingItem}
                       handleCloseClick={handleCloseClick}
@@ -251,6 +249,7 @@ const App: React.FC = () => {
                         handleInputKeyDown={handleInputKeyDown}
                         handleItemClick={handleItemClick}
                         handleDeleteClick={handleDeleteClick}
+                        //@ts-ignore
                         setItems={setItems}
                       />
                     </Col>
@@ -268,6 +267,7 @@ const App: React.FC = () => {
                             }
                             saveOnCloud={saveOnCloud}
                             loggedIn={user ? true : false}
+                            isMobile={false}
                           />
                         )}
                     </Col>
@@ -282,14 +282,16 @@ const App: React.FC = () => {
               </Row>
             </Tab>
           ))}
-          {user && (<Tab
-            eventKey="<placeholder>"
-            title={
-              <span onDoubleClick={() => handleDoubleClick("<placeholder>")}>
-                +
-              </span>
-            }
-          />)}
+          {user && (
+            <Tab
+              eventKey="<placeholder>"
+              title={
+                <span onDoubleClick={() => handleDoubleClick("<placeholder>")}>
+                  +
+                </span>
+              }
+            />
+          )}
         </Tabs>
       </Container>
     </div>

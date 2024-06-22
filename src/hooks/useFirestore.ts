@@ -99,7 +99,7 @@ export const useFirestore = (userId: string | null) => {
                   [tabId]: { ...tabData[tabId], items: savedItems },
                 });
               }
-            } catch (error) {
+            } catch (error: any) {
               console.error(
                 "Error adding document: ",
                 error.code,
@@ -185,10 +185,10 @@ export const useFirestore = (userId: string | null) => {
     itemUUID: string
   ) => {
     const newItems = tabData[tabId].items.filter((_, i) => i !== itemId);
-        setTabData({
-          ...tabData,
-          [tabId]: { ...tabData[tabId], items: newItems },
-        });
+    setTabData({
+      ...tabData,
+      [tabId]: { ...tabData[tabId], items: newItems },
+    });
     if (userId && tabData[tabId]) {
       try {
         const itemDoc = doc(db, "notes", itemUUID);

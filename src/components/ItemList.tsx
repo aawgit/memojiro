@@ -11,6 +11,7 @@ import ItemDetail from "./ItemDetail";
 interface Item {
   title: string;
   description: string;
+  itemId: string | null;
 }
 
 interface ItemListProps {
