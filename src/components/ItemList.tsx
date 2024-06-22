@@ -87,7 +87,7 @@ const ItemList: React.FC<ItemListProps> = ({
           {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {items?.map((item, index) => (
-                <>
+                <div key={index}>
                   <Draggable
                     key={index}
                     draggableId={index.toString()}
@@ -99,13 +99,15 @@ const ItemList: React.FC<ItemListProps> = ({
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         className="item-rectangle"
+                        onClick={() => handleItemClick(index)}
                       >
-                        <span onClick={() => handleItemClick(index)}>
-                          {item.title}
-                        </span>
+                        <span>{item.title}</span>
                         <span
                           className="delete-icon"
-                          onClick={() => handleDeleteClick(index)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(index);
+                          }}
                         >
                           🗑️
                         </span>
@@ -117,12 +119,6 @@ const ItemList: React.FC<ItemListProps> = ({
                       handleCloseClick &&
                       handleDescriptionChange && (
                         <div>
-                          <button
-                            className="macos-close-button"
-                            onClick={handleCloseClick}
-                          >
-                            &times;
-                          </button>
                           <ItemDetail
                             item={item}
                             handleCloseClick={handleCloseClick}
@@ -134,11 +130,12 @@ const ItemList: React.FC<ItemListProps> = ({
                             }
                             saveOnCloud={saveOnCloud}
                             loggedIn={loggedIn}
+                            isMobile={true}
                           />
                         </div>
                       )}
                   </div>
-                </>
+                </div>
               ))}
               {provided.placeholder}
             </div>

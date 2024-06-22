@@ -184,16 +184,15 @@ export const useFirestore = (userId: string | null) => {
     itemId: number,
     itemUUID: string
   ) => {
-    if (userId && tabData[tabId]) {
-      console.log(itemUUID);
-      try {
-        const itemDoc = doc(db, "notes", itemUUID);
-        await deleteDoc(itemDoc);
-        const newItems = tabData[tabId].items.filter((_, i) => i !== itemId);
+    const newItems = tabData[tabId].items.filter((_, i) => i !== itemId);
         setTabData({
           ...tabData,
           [tabId]: { ...tabData[tabId], items: newItems },
         });
+    if (userId && tabData[tabId]) {
+      try {
+        const itemDoc = doc(db, "notes", itemUUID);
+        await deleteDoc(itemDoc);
       } catch (error) {
         console.error("Error deleting document: ", error);
       }

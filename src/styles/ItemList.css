@@ -27,7 +27,7 @@
   }
   
   .item-rectangle {
-    background: linear-gradient(145deg, #d0cdcd, #a6a4a4);
+    background: #d0cdcd;
     border-radius: 12px;
     padding: 10px;
     margin-top: 10px;

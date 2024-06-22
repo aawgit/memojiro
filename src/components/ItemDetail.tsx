@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Editor from "react-simple-wysiwyg";
 import "../styles/ItemDetail.css"; // Create this file for ItemDetail specific styles
+import { Button } from "react-bootstrap";
 
 interface ItemDetailProps {
   item: {
@@ -12,6 +13,7 @@ interface ItemDetailProps {
   handleDescriptionChange: (newDescription: string) => void;
   saveOnCloud: (newDescription: string) => void; // New prop for saving to cloud
   loggedIn: boolean;
+  isMobile: boolean;
 }
 
 const ItemDetail: React.FC<ItemDetailProps> = ({
@@ -20,6 +22,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
   handleDescriptionChange,
   saveOnCloud,
   loggedIn,
+  isMobile,
 }) => {
   const [editedDescription, setEditedDescription] = useState(item.description);
   const [isChanged, setIsChanged] = useState(false);
@@ -41,7 +44,8 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
 
   return (
     <>
-      <h4 className="macos-section-title">{item.title}</h4>
+      {!isMobile && <h4 className="macos-section-title">{item.title}</h4>}
+      {isMobile && <br></br>}
       <Container className="large-text-area-container">
         <div className="close-button" onClick={handleCloseClick}>
           &times;
@@ -50,14 +54,15 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
           value={editedDescription}
           onChange={(e) => handleEditorChange(e.target.value)}
         />
+        <br></br>
         {loggedIn && (
-          <button
+          <Button
             onClick={handleSaveClick}
             disabled={!isChanged}
-            className="save-button"
+            variant="primary"
           >
             {isChanged ? "Save" : "Saved..."}
-          </button>
+          </Button>
         )}
       </Container>
     </>

@@ -98,7 +98,6 @@ const App: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete !== null) {
-      console.log(tabData[currentTab].items[itemToDelete]);
       deleteItem(
         currentTab,
         itemToDelete,
@@ -168,42 +167,38 @@ const App: React.FC = () => {
   };
 
   const saveOnCloud = async (description: string) => {
-    console.log(
-      `updating item ${tabData[currentTab].items[editingItem].itemId} ${editingItem}`
-    );
     if (
       editingItem != null &&
       tabData[currentTab].items[editingItem].itemId != null
     )
-      console.log(`updating item next step...`);
     await updateItem(
       currentTab,
       tabData[currentTab].items[editingItem].itemId,
       description
     );
-    console.log(`updated item`);
   };
 
   return (
     <div>
-      <Container fluid className="macos-container">
+      <Container fluid>
         <Row>
           <NavBarC />
-          <Alert
+          {!user && (<Alert
             key="warning"
             variant="warning"
             onClose={() => setShow(false)}
             dismissible
           >
-            Notes are saved in the browser and will be here next time you open
-            this page, unless browsing history is cleared.
-          </Alert>
+            Notes are saved in the browser and will be available the next time you open this page unless the browsing history is cleared. We recommend logging in to save your notes to the cloud for access from all your devices. It's free.
+          </Alert>)}
+          
         </Row>
 
         <Tabs
           id="controlled-tab-example"
           activeKey={currentTab}
           onSelect={(k) => setCurrentTab(k || "0")}
+          
         >
           {Object.keys(tabData).map((tabKey) => (
             <Tab
@@ -287,14 +282,14 @@ const App: React.FC = () => {
               </Row>
             </Tab>
           ))}
-          <Tab
+          {user && (<Tab
             eventKey="<placeholder>"
             title={
               <span onDoubleClick={() => handleDoubleClick("<placeholder>")}>
                 +
               </span>
             }
-          />
+          />)}
         </Tabs>
       </Container>
     </div>
