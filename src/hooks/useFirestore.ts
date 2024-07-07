@@ -13,7 +13,7 @@ import {
 import { db } from "../../firebaseConfig";
 import { getLocal } from "./usePersistentState";
 
-interface Item {
+export interface Item {
   title: string;
   description: string;
   itemId: string | null;
