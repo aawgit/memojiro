@@ -28,6 +28,7 @@ const TabTitle: React.FC<TabTitleProps> = ({
       autoFocus
       onChange={(e) => handleTitleChange(tabKey, e.target.value)}
       onBlur={(e) => handleBlur(tabKey, e.target.value)}
+      //@ts-ignore
       onKeyDown={(e) => handleKeyPress(e, tabKey, e.target.value)}
     />
   ) : (

@@ -68,10 +68,7 @@ const App: React.FC = () => {
           </div>
         )}
         {tabData["0"].items.length == 0 && (
-          <NoItemsPanel
-            handleAddClick={handleAddClick}
-            handleInputKeyDown={handleInputKeyDown}
-          ></NoItemsPanel>
+          <NoItemsPanel handleInputKeyDown={handleInputKeyDown}></NoItemsPanel>
         )}
         {tabData["0"].items.length > 0 && (
           <Tabs
