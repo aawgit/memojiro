@@ -25,4 +25,5 @@ dist-ssr
 
 # Configs
 firebaseConfig.ts
-.firebase
+.firebase/*
+.firebaserc

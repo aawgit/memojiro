@@ -2,11 +2,14 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import AuthButton from "./AuthButton";
 const NavBarC: React.FC = () => {
   return (
-    <Navbar expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
+    <Navbar
+      expand="lg"
+      className="bg-body-tertiary"
+      bg="dark"
+      data-bs-theme="dark"
+    >
       <Container fluid>
-        <Navbar.Brand href="#">
-          Notes
-        </Navbar.Brand>
+        <Navbar.Brand href="#">memojiro</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="justify-content-end">
           <Nav>
