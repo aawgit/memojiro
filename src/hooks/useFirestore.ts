@@ -28,8 +28,8 @@ interface NotesOrder {
 }
 
 export const useFirestore = (userId: string | null) => {
+  const [loading, setLoading] = useState(false);
   const [notesOrder, setNotesOrder] = useState<NotesOrder>({});
-  // Initialize tabData from local storage or default value
   const [tabData, setTabData] = useState<TabData>(() => {
     const savedData = getLocal("tabData");
     return savedData
@@ -46,67 +46,69 @@ export const useFirestore = (userId: string | null) => {
   useEffect(() => {
     if (userId) {
       const fetchTabsAndItems = async () => {
-        const notesQuery = query(
-          collection(db, "notes"),
-          where("userId", "==", userId)
-        );
-        const querySnapshot = await getDocs(notesQuery);
-        const fetchedTabData: TabData = {};
+        setLoading(true);
+        try {
+          const notesQuery = query(
+            collection(db, "notes"),
+            where("userId", "==", userId)
+          );
+          const querySnapshot = await getDocs(notesQuery);
+          const fetchedTabData: TabData = {};
 
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const tabId = data.tabId;
-          const tabName = data.tabName;
-          const item: Item = {
-            title: data.noteTitle,
-            description: data.description,
-            itemId: doc.id,
-          };
-
-          if (!fetchedTabData[tabId]) {
-            fetchedTabData[tabId] = {
-              name: tabName,
-              items: [],
-              tabNameEditable: false,
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const tabId = data.tabId;
+            const tabName = data.tabName;
+            const item: Item = {
+              title: data.noteTitle,
+              description: data.description,
+              itemId: doc.id,
             };
-          }
-          fetchedTabData[tabId].items.push(item);
-        });
 
-        if (Object.keys(fetchedTabData).length > 0) {
-          setTabData(fetchedTabData);
-        } else {
-          // Only used when a user logs in for the first time - for backwards compatibility
-          if (tabData) {
-            try {
-              // Save local data to Firestore
-              for (const tabId in tabData) {
-                const savedItems = [];
-                const tab = tabData[tabId];
-                for (const item of tab.items) {
-                  const itemDocRef = await addDoc(collection(db, "notes"), {
-                    userId,
-                    tabId: tabId,
-                    tabName: tab.name,
-                    noteTitle: item.title,
-                    description: item.description ? item.description : "",
+            if (!fetchedTabData[tabId]) {
+              fetchedTabData[tabId] = {
+                name: tabName,
+                items: [],
+                tabNameEditable: false,
+              };
+            }
+            fetchedTabData[tabId].items.push(item);
+          });
+
+          if (Object.keys(fetchedTabData).length > 0) {
+            setTabData(fetchedTabData);
+          } else {
+            if (tabData) {
+              try {
+                for (const tabId in tabData) {
+                  const savedItems = [];
+                  const tab = tabData[tabId];
+                  for (const item of tab.items) {
+                    const itemDocRef = await addDoc(collection(db, "notes"), {
+                      userId,
+                      tabId: tabId,
+                      tabName: tab.name,
+                      noteTitle: item.title,
+                      description: item.description ? item.description : "",
+                    });
+                    savedItems.push({ ...item, itemId: itemDocRef.id });
+                  }
+                  setTabData({
+                    ...tabData,
+                    [tabId]: { ...tabData[tabId], items: savedItems },
                   });
-                  // To add itemID
-                  savedItems.push({ ...item, itemId: itemDocRef.id });
                 }
-                setTabData({
-                  ...tabData,
-                  [tabId]: { ...tabData[tabId], items: savedItems },
-                });
+              } catch (error: any) {
+                console.error(
+                  "Error adding document: ",
+                  error.code,
+                  error.message
+                );
               }
-            } catch (error: any) {
-              console.error(
-                "Error adding document: ",
-                error.code,
-                error.message
-              );
             }
           }
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -116,17 +118,14 @@ export const useFirestore = (userId: string | null) => {
   }, [userId]);
 
   const addItem = async (tabId: string, title: string) => {
-    // Create a temporary item without an itemId
     const tempItem = { title, description: "", itemId: null };
     const newItems = [tempItem, ...tabData[tabId].items];
 
-    // Update the state with the temporary item
     setTabData({
       ...tabData,
       [tabId]: { ...tabData[tabId], items: newItems },
     });
 
-    // Add the new item to Firestore and get the itemId
     if (userId && tabData[tabId]) {
       try {
         const itemDocRef = await addDoc(collection(db, "notes"), {
@@ -137,7 +136,6 @@ export const useFirestore = (userId: string | null) => {
         });
         const id = itemDocRef.id;
 
-        // Update the state with the received itemId
         const updatedItems = newItems.map((item) =>
           item === tempItem ? { ...item, itemId: id } : item
         );
@@ -147,7 +145,6 @@ export const useFirestore = (userId: string | null) => {
           [tabId]: { ...tabData[tabId], items: updatedItems },
         });
 
-        // Update the notes order in Firestore
         if (userId) updateNotesOrder(userId, tabId, updatedItems);
       } catch (error) {
         console.error("Error adding document: ", error);
@@ -200,6 +197,7 @@ export const useFirestore = (userId: string | null) => {
   };
 
   const fetchAllNotesOrder = async (userId: string) => {
+    setLoading(true);
     try {
       const notesOrderQuery = query(
         collection(db, "note_order"),
@@ -217,6 +215,8 @@ export const useFirestore = (userId: string | null) => {
       setNotesOrder(fetchedNotesOrder);
     } catch (error) {
       console.error("Error fetching notes order: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -232,7 +232,6 @@ export const useFirestore = (userId: string | null) => {
             )
             .filter((item) => item !== undefined) as Item[];
 
-          // Handle items not in notesOrder
           const unorderedItems = updatedTabData[tabId].items.filter(
             (item) => !notesOrder[tabId].includes(item.itemId!)
           );
@@ -279,5 +278,6 @@ export const useFirestore = (userId: string | null) => {
     deleteItem,
     updateItem,
     updateNotesOrder,
+    loading, // Return loading state
   };
 };

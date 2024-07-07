@@ -16,6 +16,7 @@ const useAppLogic = (user: any) => {
     deleteItem,
     updateItem,
     updateNotesOrder,
+    loading,
   } = useFirestore(user?.uid || null);
 
   const [inputVisible, setInputVisible] = useState(false);
@@ -144,6 +145,7 @@ const useAppLogic = (user: any) => {
     saveOnCloud,
     handleBlur,
     handleKeyPress,
+    loading,
   };
 };
 
