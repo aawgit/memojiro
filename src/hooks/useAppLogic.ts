@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { setLocal } from "../hooks/usePersistentState";
 import { useFirestore } from "../hooks/useFirestore";
+import { generateTabId } from "../utils/utils";
 
 interface Item {
   title: string;
@@ -61,7 +62,7 @@ const useAppLogic = (user: any) => {
     setItemToDelete(null);
   };
   const handleAddTab = () => {
-    const newTabId = Object.keys(tabData).length.toString();
+    const newTabId = generateTabId();
     setTabData({
       ...tabData,
       [newTabId]: { name: "New tab", items: [], tabNameEditable: true },
