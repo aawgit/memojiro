@@ -18,6 +18,7 @@ const useAppLogic = (user: any) => {
     updateItem,
     updateNotesOrder,
     loading,
+    moveItem,
   } = useFirestore(user?.uid || null);
 
   const [inputVisible, setInputVisible] = useState(false);
@@ -125,6 +126,10 @@ const useAppLogic = (user: any) => {
     }
   };
 
+  const moveItemWrapper = (sourceIndex: number, destinationTabId: string) => {
+    moveItem(currentTab, sourceIndex, destinationTabId);
+  };
+
   return {
     tabData,
     inputVisible,
@@ -148,6 +153,7 @@ const useAppLogic = (user: any) => {
     handleKeyPress,
     loading,
     itemToDelete,
+    moveItemWrapper,
   };
 };
 

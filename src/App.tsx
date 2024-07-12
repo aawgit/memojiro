@@ -43,6 +43,7 @@ const App: React.FC = () => {
     saveOnCloud,
     handleBlur,
     handleKeyPress,
+    moveItemWrapper,
   } = useAppLogic(user);
 
   useEffect(() => {
@@ -112,6 +113,13 @@ const App: React.FC = () => {
                         handleDescriptionChange={handleDescriptionChange}
                         saveOnCloud={saveOnCloud}
                         loggedIn={!!user}
+                        tabNames={Object.keys(tabData).reduce((acc, tabId) => {
+                          if (tabId !== currentTab) {
+                            acc[tabId] = tabData[tabId].name;
+                          }
+                          return acc;
+                        }, {} as { [key: string]: string })}
+                        moveItem={moveItemWrapper}
                       />
                     </Col>
                   ) : (
@@ -131,6 +139,16 @@ const App: React.FC = () => {
                           }
                           saveOnCloud={saveOnCloud}
                           loggedIn={!!user}
+                          tabNames={Object.keys(tabData).reduce(
+                            (acc, tabId) => {
+                              if (tabId !== currentTab) {
+                                acc[tabId] = tabData[tabId].name;
+                              }
+                              return acc;
+                            },
+                            {} as { [key: string]: string }
+                          )}
+                          moveItem={moveItemWrapper}
                         />
                       </Col>
                       <Col md={6} className="macos-panel">

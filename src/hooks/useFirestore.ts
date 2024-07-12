@@ -99,11 +99,11 @@ export const useFirestore = (userId: string | null) => {
                   });
                 }
               } catch (error: any) {
-                console.error(
-                  "Error adding document: ",
-                  error.code,
-                  error.message
-                );
+                // console.error(
+                //   "Error adding document: ",
+                //   error.code,
+                //   error.message
+                // );
               }
             }
           }
@@ -151,12 +151,12 @@ export const useFirestore = (userId: string | null) => {
 
         if (userId) updateNotesOrder(userId, tabId, updatedItems);
       } catch (error) {
-        console.error("Error adding document: ", error);
+        // console.error("Error adding document: ", error);
       }
     }
   };
 
-  const updateItem = async (
+  const updateItemDesc = async (
     tabId: string,
     itemId: string,
     description: string
@@ -175,7 +175,7 @@ export const useFirestore = (userId: string | null) => {
           },
         });
       } catch (error) {
-        console.error("Error updating document: ", error);
+        // console.error("Error updating document: ", error);
       }
     }
   };
@@ -195,7 +195,7 @@ export const useFirestore = (userId: string | null) => {
         const itemDoc = doc(db, "notes", itemUUID);
         await deleteDoc(itemDoc);
       } catch (error) {
-        console.error("Error deleting document: ", error);
+        // console.error("Error deleting document: ", error);
       }
     }
   };
@@ -218,7 +218,7 @@ export const useFirestore = (userId: string | null) => {
 
       setNotesOrder(fetchedNotesOrder);
     } catch (error) {
-      console.error("Error fetching notes order: ", error);
+      // console.error("Error fetching notes order: ", error);
     } finally {
       setLoading(false);
     }
@@ -271,7 +271,55 @@ export const useFirestore = (userId: string | null) => {
         { merge: true }
       );
     } catch (error) {
-      console.error("Error updating notes order: ", error);
+      // console.error("Error updating notes order: ", error);
+    }
+  };
+
+  const moveItem = async (
+    sourceTabId: string,
+    sourceIndex: number,
+    destinationTabId: string
+  ) => {
+    const item = tabData[sourceTabId].items[sourceIndex];
+    if (!item) return;
+    // Remove the item from the current tab
+    const updatedSourceTabItems = tabData[sourceTabId].items.filter(
+      (_, index) => index !== sourceIndex
+    );
+
+    // Add the item to the new tab
+    const updatedDestinationTabItems = [
+      ...tabData[destinationTabId].items,
+      item,
+    ];
+
+    setTabData({
+      ...tabData,
+      [sourceTabId]: {
+        ...tabData[sourceTabId],
+        items: updatedSourceTabItems,
+      },
+      [destinationTabId]: {
+        ...tabData[destinationTabId],
+        items: updatedDestinationTabItems,
+      },
+    });
+
+    if (userId && tabData[sourceTabId] && tabData[destinationTabId]) {
+      try {
+        // Update the item in Firestore
+        const itemDoc = doc(db, "notes", item.itemId!);
+        await updateDoc(itemDoc, {
+          tabId: destinationTabId,
+          tabName: tabData[destinationTabId].name,
+        });
+
+        // Optionally, update notes order for both tabs
+        updateNotesOrder(userId, sourceTabId, updatedSourceTabItems);
+        updateNotesOrder(userId, destinationTabId, updatedDestinationTabItems);
+      } catch (error) {
+        // console.error("Error moving item: ", error);
+      }
     }
   };
 
@@ -280,8 +328,9 @@ export const useFirestore = (userId: string | null) => {
     addItem,
     setTabData,
     deleteItem,
-    updateItem,
+    updateItem: updateItemDesc,
     updateNotesOrder,
     loading, // Return loading state
+    moveItem,
   };
 };

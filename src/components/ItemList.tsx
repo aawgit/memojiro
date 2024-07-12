@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -7,6 +7,10 @@ import {
 } from "@hello-pangea/dnd";
 import "../styles/ItemList.css"; // Create this file for ItemList specific styles
 import ItemDetail from "./ItemDetail";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faEllipsisV } from "@fortawesome/free-solid-svg-icons"; // Import icons
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
 
 interface Item {
   title: string;
@@ -21,12 +25,14 @@ interface ItemListProps {
   handleInputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   handleItemClick: (index: number) => void;
   handleDeleteClick: (index: number) => void;
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>; // Add this line
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
   editingItem?: number | null;
   handleCloseClick?: () => void;
   handleDescriptionChange?: (index: number, newDescription: string) => void;
   saveOnCloud: (newDescription: string) => void; // New prop for saving to cloud
   loggedIn: boolean;
+  tabNames: { [key: string]: string }; // New prop for tab names
+  moveItem: (sourceIndex: number, destinationTabId: string) => void; // New prop for moving items
 }
 
 const reorder = (
@@ -47,12 +53,14 @@ const ItemList: React.FC<ItemListProps> = ({
   handleInputKeyDown,
   handleItemClick,
   handleDeleteClick,
-  setItems, // Add this line
+  setItems,
   editingItem,
   handleCloseClick,
   handleDescriptionChange,
   saveOnCloud,
   loggedIn,
+  tabNames,
+  moveItem,
 }) => {
   const onDragEnd = (result: DropResult): void => {
     // Dropped outside the list
@@ -64,7 +72,7 @@ const ItemList: React.FC<ItemListProps> = ({
       result.source.index,
       result.destination.index
     );
-    setItems(reorderedItems); // Use setItems here
+    setItems(reorderedItems);
   };
 
   return (
@@ -102,7 +110,7 @@ const ItemList: React.FC<ItemListProps> = ({
                         className="item-rectangle"
                         onClick={() => handleItemClick(index)}
                       >
-                        <span>{item.title}</span>
+                        <span className="item-title">{item.title}</span>
                         <span
                           className="delete-icon"
                           onClick={(e) => {
@@ -110,8 +118,28 @@ const ItemList: React.FC<ItemListProps> = ({
                             handleDeleteClick(index);
                           }}
                         >
-                          🗑️
+                          <FontAwesomeIcon icon={faTrash} />
                         </span>
+                        {loggedIn && (
+                          <DropdownButton
+                            id={`dropdown-${index}`}
+                            className="move-item-dropdown"
+                            title={<FontAwesomeIcon icon={faEllipsisV} />}
+                            onClick={(e) => e.stopPropagation()}
+                            variant="link" // Add this to remove the background color
+                            drop="down" // Add this to remove the downwards pointing arrow
+                          >
+                            <Dropdown.Header>Move to</Dropdown.Header>
+                            {Object.keys(tabNames).map((tabId) => (
+                              <Dropdown.Item
+                                key={tabId}
+                                onClick={() => moveItem(index, tabId)}
+                              >
+                                {tabNames[tabId]}
+                              </Dropdown.Item>
+                            ))}
+                          </DropdownButton>
+                        )}
                       </div>
                     )}
                   </Draggable>
