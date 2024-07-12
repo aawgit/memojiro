@@ -118,7 +118,11 @@ export const useFirestore = (userId: string | null) => {
   }, [userId]);
 
   const addItem = async (tabId: string, title: string) => {
-    const tempItem = { title, description: "", itemId: null };
+    const tempItem = {
+      title,
+      description: "",
+      itemId: String(tabData[tabId].items.length),
+    };
     const newItems = [tempItem, ...tabData[tabId].items];
 
     setTabData({

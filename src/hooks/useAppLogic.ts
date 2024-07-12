@@ -147,6 +147,7 @@ const useAppLogic = (user: any) => {
     handleBlur,
     handleKeyPress,
     loading,
+    itemToDelete,
   };
 };
 

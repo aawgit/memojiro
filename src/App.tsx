@@ -27,6 +27,7 @@ const App: React.FC = () => {
     showConfirmDialog,
     currentTab,
     loading,
+    itemToDelete,
     setCurrentTab,
     handleAddClick,
     handleDescriptionChange,
@@ -152,10 +153,11 @@ const App: React.FC = () => {
                       </Col>
                     </>
                   )}
-                  {showConfirmDialog && (
+                  {showConfirmDialog && itemToDelete != null && (
                     <ConfirmDialog
                       handleConfirmDelete={handleConfirmDelete}
                       handleCancelDelete={handleCancelDelete}
+                      title={tabData[currentTab].items[itemToDelete].title}
                     />
                   )}
                 </Row>

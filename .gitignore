@@ -28,3 +28,4 @@ firebaseConfig.ts
 .firebase
 .firebaserc
 .firebase/hosting.ZGlzdA.cache
+*.cache
