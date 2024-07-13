@@ -186,10 +186,20 @@ export const useFirestore = (userId: string | null) => {
     itemUUID: string
   ) => {
     const newItems = tabData[tabId].items.filter((_, i) => i !== itemId);
-    setTabData({
-      ...tabData,
-      [tabId]: { ...tabData[tabId], items: newItems },
-    });
+
+    if (newItems.length === 0) {
+      // Remove the tab if there are no items left
+      const newTabData = { ...tabData };
+      delete newTabData[tabId];
+      setTabData(newTabData);
+    } else {
+      // Update the tab with the new list of items
+      setTabData({
+        ...tabData,
+        [tabId]: { ...tabData[tabId], items: newItems },
+      });
+    }
+
     if (userId && tabData[tabId]) {
       try {
         const itemDoc = doc(db, "notes", itemUUID);

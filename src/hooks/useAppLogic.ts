@@ -22,7 +22,7 @@ const useAppLogic = (user: any) => {
   } = useFirestore(user?.uid || null);
 
   const [inputVisible, setInputVisible] = useState(false);
-  const [editingItem, setEditingItem] = useState<number | null>(null);
+  const [editingItem, setEditingItem] = useState<number | null>(0);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
   const [currentTab, setCurrentTab] = useState<string>("0");
@@ -102,10 +102,12 @@ const useAppLogic = (user: any) => {
       e.key === "Enter" &&
       (e.target as HTMLInputElement).value.trim() !== ""
     ) {
+      console.log(editingItem);
       addItem(currentTab, (e.target as HTMLInputElement).value);
       setInputVisible(false);
       (e.target as HTMLInputElement).value = "";
-      setEditingItem(null);
+      console.log(editingItem);
+      setEditingItem(0);
     }
   };
   const handleTitleChange = (key: string, newName: string) => {

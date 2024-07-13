@@ -49,7 +49,8 @@ const App: React.FC = () => {
   useEffect(() => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
-
+  const firstTabId = Object.keys(tabData)[0];
+  console.log(tabData[firstTabId]);
   return (
     <div>
       <Container fluid>
@@ -69,10 +70,11 @@ const App: React.FC = () => {
             <Spinner animation="border" variant="primary" />
           </div>
         )}
-        {tabData["0"].items.length == 0 && (
+        {tabData[firstTabId].items.length == 0 && (
           <NoItemsPanel handleInputKeyDown={handleInputKeyDown}></NoItemsPanel>
         )}
-        {tabData["0"].items.length > 0 && (
+
+        {tabData[firstTabId].items.length > 0 && (
           <Tabs
             id="controlled-tab-example"
             activeKey={currentTab}
