@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Container from "react-bootstrap/Container";
 import {
   Editor,
   Toolbar,
@@ -54,9 +53,9 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
       {!isMobile && <h4 className="macos-section-title">{item.title}</h4>}
       {isMobile && <br></br>}
       {/* <Container className="large-text-area-container"> */}
-      <div className="close-button" onClick={handleCloseClick}>
+      {/* <div className="close-button" onClick={handleCloseClick}>
         &times;
-      </div>
+      </div> */}
       <EditorProvider>
         <Editor
           value={editedDescription}
