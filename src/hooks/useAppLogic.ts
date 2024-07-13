@@ -41,7 +41,9 @@ const useAppLogic = (user: any) => {
       [currentTab]: { ...tabData[currentTab], items: updatedItems },
     });
   };
-  const handleItemClick = (index: number) => setEditingItem(index);
+  const handleItemClick = (index: number) => {
+    setEditingItem((prevIndex) => (prevIndex === index ? null : index));
+  };
   const handleCloseClick = () => setEditingItem(null);
   const handleDeleteClick = (index: number) => {
     setItemToDelete(index);

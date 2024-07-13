@@ -80,7 +80,7 @@
 
 .delete-icon {
   cursor: pointer;
-  margin-right: 10px;
+  margin-right: 5px;
   color: gray; /* Change color to gray */
   align-self: right;
   /* margin-right: 0; Remove margin to align with the 3 dots icon */
@@ -89,7 +89,6 @@
 
 .move-item-dropdown {
   cursor: pointer;
-  margin-left: 10px;
   padding-right: 0;
   padding: 0; /* Remove padding to remove the blue background */
 }

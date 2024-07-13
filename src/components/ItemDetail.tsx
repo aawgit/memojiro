@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
-import Editor from "react-simple-wysiwyg";
+import {
+  Editor,
+  Toolbar,
+  EditorProvider,
+  BtnBulletList,
+  BtnNumberedList,
+  BtnLink,
+} from "react-simple-wysiwyg";
 import "../styles/ItemDetail.css"; // Create this file for ItemDetail specific styles
 import { Button } from "react-bootstrap";
 
@@ -46,25 +53,40 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
     <>
       {!isMobile && <h4 className="macos-section-title">{item.title}</h4>}
       {isMobile && <br></br>}
-      <Container className="large-text-area-container">
-        <div className="close-button" onClick={handleCloseClick}>
-          &times;
-        </div>
+      {/* <Container className="large-text-area-container"> */}
+      <div className="close-button" onClick={handleCloseClick}>
+        &times;
+      </div>
+      <EditorProvider>
         <Editor
           value={editedDescription}
           onChange={(e) => handleEditorChange(e.target.value)}
-        />
-        <br></br>
-        {loggedIn && (
-          <Button
-            onClick={handleSaveClick}
-            disabled={!isChanged}
-            variant="primary"
-          >
-            {isChanged ? "Save" : "Saved..."}
-          </Button>
-        )}
-      </Container>
+          containerProps={{
+            style: {
+              background: "white",
+              // borderRadius: "12px",
+              border: "1px solid #ccc",
+            },
+          }}
+        >
+          <Toolbar>
+            <BtnBulletList />
+            <BtnNumberedList />
+            <BtnLink />
+          </Toolbar>
+        </Editor>
+      </EditorProvider>
+      {/* </Container> */}
+      <br></br>
+      {loggedIn && (
+        <Button
+          onClick={handleSaveClick}
+          disabled={!isChanged}
+          variant="primary"
+        >
+          {isChanged ? "Save" : "Saved..."}
+        </Button>
+      )}
     </>
   );
 };
