@@ -32,7 +32,7 @@ const App: React.FC = () => {
     handleAddClick,
     handleDescriptionChange,
     handleItemClick,
-    handleCloseClick,
+    // handleCloseClick,
     handleDeleteClick,
     handleConfirmDelete,
     handleCancelDelete,
@@ -109,7 +109,7 @@ const App: React.FC = () => {
                           >
                         }
                         editingItem={editingItem}
-                        handleCloseClick={handleCloseClick}
+                        // handleCloseClick={handleCloseClick}
                         handleDescriptionChange={handleDescriptionChange}
                         saveOnCloud={saveOnCloud}
                         loggedIn={!!user}
@@ -156,7 +156,7 @@ const App: React.FC = () => {
                           tabData[tabKey].items[editingItem] && (
                             <ItemDetail
                               item={tabData[tabKey].items[editingItem]}
-                              handleCloseClick={handleCloseClick}
+                              // handleCloseClick={handleCloseClick}
                               handleDescriptionChange={(newDescription) =>
                                 handleDescriptionChange(
                                   editingItem,

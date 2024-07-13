@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Container from "react-bootstrap/Container";
 import {
   Editor,
   Toolbar,
@@ -16,7 +15,7 @@ interface ItemDetailProps {
     title: string;
     description: string;
   };
-  handleCloseClick: () => void;
+  // handleCloseClick: () => void;
   handleDescriptionChange: (newDescription: string) => void;
   saveOnCloud: (newDescription: string) => void; // New prop for saving to cloud
   loggedIn: boolean;
@@ -25,7 +24,7 @@ interface ItemDetailProps {
 
 const ItemDetail: React.FC<ItemDetailProps> = ({
   item,
-  handleCloseClick,
+  // handleCloseClick,
   handleDescriptionChange,
   saveOnCloud,
   loggedIn,
@@ -54,9 +53,9 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
       {!isMobile && <h4 className="macos-section-title">{item.title}</h4>}
       {isMobile && <br></br>}
       {/* <Container className="large-text-area-container"> */}
-      <div className="close-button" onClick={handleCloseClick}>
+      {/* <div className="close-button" onClick={handleCloseClick}>
         &times;
-      </div>
+      </div> */}
       <EditorProvider>
         <Editor
           value={editedDescription}

@@ -27,7 +27,7 @@ interface ItemListProps {
   handleDeleteClick: (index: number) => void;
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
   editingItem?: number | null;
-  handleCloseClick?: () => void;
+  // handleCloseClick?: () => void;
   handleDescriptionChange?: (index: number, newDescription: string) => void;
   saveOnCloud: (newDescription: string) => void; // New prop for saving to cloud
   loggedIn: boolean;
@@ -55,7 +55,7 @@ const ItemList: React.FC<ItemListProps> = ({
   handleDeleteClick,
   setItems,
   editingItem,
-  handleCloseClick,
+  // handleCloseClick,
   handleDescriptionChange,
   saveOnCloud,
   loggedIn,
@@ -145,12 +145,12 @@ const ItemList: React.FC<ItemListProps> = ({
                   </Draggable>
                   <div>
                     {editingItem === index &&
-                      handleCloseClick &&
+                      // handleCloseClick &&
                       handleDescriptionChange && (
                         <div>
                           <ItemDetail
                             item={item}
-                            handleCloseClick={handleCloseClick}
+                            // handleCloseClick={handleCloseClick}
                             handleDescriptionChange={(newDescription) =>
                               handleDescriptionChange(
                                 editingItem,
