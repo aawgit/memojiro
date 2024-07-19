@@ -19,17 +19,24 @@ const useAppLogic = (user: any) => {
     updateNotesOrder,
     loading,
     moveItem,
+    noNotes,
+    checkIfEmpty,
+    currentTab,
+    setCurrentTab,
   } = useFirestore(user?.uid || null);
 
   const [inputVisible, setInputVisible] = useState(false);
-  const [editingItem, setEditingItem] = useState<number | null>(null);
+  const [editingItem, setEditingItem] = useState<number | null>(0);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
-  const [currentTab, setCurrentTab] = useState<string>("0");
 
+  // This is causing too many renders, even if logged.
+  // TODO: Optimize this.
   useEffect(() => {
     if (!user) setLocal("tabData", tabData);
   }, [tabData]);
+
+  useEffect(checkIfEmpty, [tabData]);
 
   const handleAddClick = () => setInputVisible(true);
   const handleDescriptionChange = (index: number, newDescription: string) => {
@@ -105,7 +112,8 @@ const useAppLogic = (user: any) => {
       addItem(currentTab, (e.target as HTMLInputElement).value);
       setInputVisible(false);
       (e.target as HTMLInputElement).value = "";
-      setEditingItem(null);
+      if (tabData[currentTab].items.length >= 1) setEditingItem(null);
+      else setEditingItem(0);
     }
   };
   const handleTitleChange = (key: string, newName: string) => {
@@ -156,6 +164,7 @@ const useAppLogic = (user: any) => {
     loading,
     itemToDelete,
     moveItemWrapper,
+    noNotes,
   };
 };
 

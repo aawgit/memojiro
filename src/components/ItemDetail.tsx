@@ -15,7 +15,7 @@ interface ItemDetailProps {
     title: string;
     description: string;
   };
-  handleCloseClick: () => void;
+  // handleCloseClick: () => void;
   handleDescriptionChange: (newDescription: string) => void;
   saveOnCloud: (newDescription: string) => void; // New prop for saving to cloud
   loggedIn: boolean;
@@ -24,7 +24,7 @@ interface ItemDetailProps {
 
 const ItemDetail: React.FC<ItemDetailProps> = ({
   item,
-  handleCloseClick,
+  // handleCloseClick,
   handleDescriptionChange,
   saveOnCloud,
   loggedIn,
