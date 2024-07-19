@@ -16,6 +16,7 @@ import NoItemsPanel from "./components/NoItemsPanel";
 import "./styles/App.css";
 import "./styles/DesktopLayout.css";
 import "./styles/MobileLayout.css";
+import SearchNotes from "./components/SearchNotes";
 
 const App: React.FC = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -44,13 +45,13 @@ const App: React.FC = () => {
     handleBlur,
     handleKeyPress,
     moveItemWrapper,
+    noNotes,
   } = useAppLogic(user);
 
   useEffect(() => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
-  const firstTabId = Object.keys(tabData)[0];
-  console.log(tabData[firstTabId]);
+
   return (
     <div>
       <Container fluid>
@@ -70,11 +71,16 @@ const App: React.FC = () => {
             <Spinner animation="border" variant="primary" />
           </div>
         )}
-        {tabData[firstTabId].items.length == 0 && (
-          <NoItemsPanel handleInputKeyDown={handleInputKeyDown}></NoItemsPanel>
+        {noNotes && (
+          <>
+            <br></br>
+            <NoItemsPanel
+              handleInputKeyDown={handleInputKeyDown}
+            ></NoItemsPanel>
+          </>
         )}
 
-        {tabData[firstTabId].items.length > 0 && (
+        {!noNotes && (
           <Tabs
             id="controlled-tab-example"
             activeKey={currentTab}
@@ -153,7 +159,7 @@ const App: React.FC = () => {
                           moveItem={moveItemWrapper}
                         />
                       </Col>
-                      <Col md={6} className="macos-panel">
+                      <Col md={5} className="macos-panel">
                         {editingItem !== null &&
                           tabData[tabKey].items[editingItem] && (
                             <ItemDetail
@@ -170,6 +176,19 @@ const App: React.FC = () => {
                               isMobile={false}
                             />
                           )}
+                        {editingItem == null && (
+                          <p>
+                            <i>Select a note title to view the content.</i>
+                          </p>
+                        )}
+                      </Col>
+
+                      <Col md={3} className="macos-panel">
+                        {/* Review
+                        <p>
+                          <i>Nothing so far...</i>
+                        </p> */}
+                        <SearchNotes tabData={tabData} />
                       </Col>
                     </>
                   )}

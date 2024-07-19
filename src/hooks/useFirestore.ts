@@ -19,7 +19,7 @@ export interface Item {
   itemId: string | null;
 }
 
-interface TabData {
+export interface TabData {
   [key: string]: { name: string; items: Item[]; tabNameEditable: boolean };
 }
 
@@ -28,6 +28,7 @@ interface NotesOrder {
 }
 
 export const useFirestore = (userId: string | null) => {
+  const [currentTab, setCurrentTab] = useState<string>("0");
   const [loading, setLoading] = useState(false);
   const [notesOrder, setNotesOrder] = useState<NotesOrder>({});
   const [tabData, setTabData] = useState<TabData>(() => {
@@ -42,6 +43,8 @@ export const useFirestore = (userId: string | null) => {
           },
         };
   });
+
+  const [noNotes, setNoNotes] = useState<boolean>(false);
 
   useEffect(() => {
     if (userId) {
@@ -191,7 +194,16 @@ export const useFirestore = (userId: string | null) => {
       // Remove the tab if there are no items left
       const newTabData = { ...tabData };
       delete newTabData[tabId];
-      setTabData(newTabData);
+      if (Object.keys(newTabData).length === 0) {
+        setTabData({
+          "0": {
+            name: "Home",
+            items: [],
+            tabNameEditable: false,
+          },
+        });
+        setCurrentTab("0");
+      } else setTabData(newTabData);
     } else {
       // Update the tab with the new list of items
       setTabData({
@@ -333,6 +345,12 @@ export const useFirestore = (userId: string | null) => {
     }
   };
 
+  const checkIfEmpty = () => {
+    if (Object.entries(tabData).length === 0) setNoNotes(true);
+    else if (Object.entries(tabData)[0][1].items.length === 0) setNoNotes(true);
+    else setNoNotes(false);
+  };
+
   return {
     tabData,
     addItem,
@@ -342,5 +360,9 @@ export const useFirestore = (userId: string | null) => {
     updateNotesOrder,
     loading, // Return loading state
     moveItem,
+    noNotes,
+    checkIfEmpty,
+    currentTab,
+    setCurrentTab,
   };
 };

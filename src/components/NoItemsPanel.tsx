@@ -12,7 +12,7 @@ const NoItemsPanel: React.FC<Props> = ({ handleInputKeyDown }) => (
       type="text"
       className="input-field"
       onKeyDown={handleInputKeyDown}
-      placeholder="Note title goes here..."
+      placeholder="Add your first note title here..."
       autoFocus
       style={{ borderColor: "#ff6600" }}
     />
