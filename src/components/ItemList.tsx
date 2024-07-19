@@ -8,7 +8,11 @@ import {
 import "../styles/ItemList.css"; // Create this file for ItemList specific styles
 import ItemDetail from "./ItemDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEllipsisV } from "@fortawesome/free-solid-svg-icons"; // Import icons
+import {
+  faTrash,
+  faEllipsisV,
+  faCirclePlus,
+} from "@fortawesome/free-solid-svg-icons"; // Import icons
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
@@ -79,7 +83,7 @@ const ItemList: React.FC<ItemListProps> = ({
     <div className="list-container">
       <div style={{ alignContent: "center", display: "flex", width: "100%" }}>
         <div className="plus-circle" onClick={handleAddClick}>
-          +
+          <FontAwesomeIcon icon={faCirclePlus} />
         </div>
       </div>
       {inputVisible && (
