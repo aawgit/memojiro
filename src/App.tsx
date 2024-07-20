@@ -85,6 +85,7 @@ const App: React.FC = () => {
             id="controlled-tab-example"
             activeKey={currentTab}
             onSelect={(k) => setCurrentTab(k || "0")}
+            style={{ marginTop: "5px" }}
           >
             {Object.keys(tabData).map((tabKey) => (
               <Tab

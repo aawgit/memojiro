@@ -13,13 +13,14 @@
 }
 
 .macos-panel {
-  background: #b2afaf;
+  background: #eae7dc;
+  border: 2px solid #8e8d8a;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin: 0 10px;
   flex-grow: 1;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 
 .macos-panel h2 {
@@ -56,9 +57,9 @@
   width: 300px;
   height: 300px;
   margin: auto;
-  border: 1px solid #dee2e6;
+  border: 2px solid #8e8d8a;
   border-radius: 12px;
-  background-color: #d0cdcd;
+  background-color: #eae7dc;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   text-align: center;
