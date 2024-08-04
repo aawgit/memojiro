@@ -33,7 +33,6 @@ const App: React.FC = () => {
     handleAddClick,
     handleDescriptionChange,
     handleItemClick,
-    // handleCloseClick,
     handleDeleteClick,
     handleConfirmDelete,
     handleCancelDelete,

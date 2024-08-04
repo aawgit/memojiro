@@ -23,6 +23,7 @@ const useAppLogic = (user: any) => {
     checkIfEmpty,
     currentTab,
     setCurrentTab,
+    upsertTab,
   } = useFirestore(user?.uid || null);
 
   const [inputVisible, setInputVisible] = useState(false);
@@ -90,10 +91,8 @@ const useAppLogic = (user: any) => {
     }
   };
   const handleBlur = (key: string, name: string) => {
-    setTabData({
-      ...tabData,
-      [key]: { ...tabData[key], name, tabNameEditable: false },
-    });
+    // Add new tab or update the tab name
+    upsertTab(key, name);
   };
   const handleKeyPress = (
     e: React.KeyboardEvent<HTMLInputElement>,
