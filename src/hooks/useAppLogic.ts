@@ -9,7 +9,7 @@ interface Item {
   itemId: string;
 }
 
-const useAppLogic = (user: any) => {
+const useAppLogic = (user: any, isMobile: boolean) => {
   const {
     tabData,
     setTabData,
@@ -111,7 +111,7 @@ const useAppLogic = (user: any) => {
       addItem(currentTab, (e.target as HTMLInputElement).value);
       setInputVisible(false);
       (e.target as HTMLInputElement).value = "";
-      if (tabData[currentTab].items.length >= 1) setEditingItem(null);
+      if (isMobile) setEditingItem(null);
       else setEditingItem(0);
     }
   };
@@ -128,9 +128,10 @@ const useAppLogic = (user: any) => {
     });
     if (user) updateNotesOrder(user.uid, currentTab, items);
   };
-  const saveOnCloud = async (description: string) => {
+  const saveOnCloud = async () => {
     if (editingItem != null) {
       const itemId = tabData[currentTab].items[editingItem].itemId;
+      const description = tabData[currentTab].items[editingItem].description;
       if (itemId) await updateItem(currentTab, itemId, description);
     }
   };

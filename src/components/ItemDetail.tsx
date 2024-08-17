@@ -17,7 +17,7 @@ interface ItemDetailProps {
   };
   // handleCloseClick: () => void;
   handleDescriptionChange: (newDescription: string) => void;
-  saveOnCloud: (newDescription: string) => void; // New prop for saving to cloud
+  saveOnCloud: () => void; // New prop for saving to cloud
   loggedIn: boolean;
   isMobile: boolean;
 }
@@ -44,7 +44,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
   };
 
   const handleSaveClick = () => {
-    saveOnCloud(item.description);
+    saveOnCloud();
     setIsChanged(false);
   };
 

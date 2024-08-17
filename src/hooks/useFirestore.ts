@@ -138,6 +138,9 @@ export const useFirestore = (userId: string | null) => {
 
           if (Object.keys(fetchedTabData).length > 0) {
             setTabData(fetchedTabData);
+            const tabIds = Object.keys(fetchedTabData);
+            const nextTabId = tabIds.length > 0 ? tabIds[0] : "0";
+            setCurrentTab(nextTabId);
           } else {
             if (tabData) {
               pushTabDatatoDB(tabData, userId);
@@ -228,33 +231,64 @@ export const useFirestore = (userId: string | null) => {
     const newItems = tabData[tabId].items.filter((_, i) => i !== itemId);
 
     if (newItems.length === 0) {
-      // Remove the tab if there are no items left
-      const newTabData = { ...tabData };
-      delete newTabData[tabId];
-      if (Object.keys(newTabData).length === 0) {
-        setTabData({
-          "0": {
-            name: "Home",
-            items: [],
-            tabNameEditable: false,
-          },
-        });
-        setCurrentTab("0");
-      } else setTabData(newTabData);
+      // If no items left, delete the tab
+      await deleteTab(tabId);
     } else {
-      // Update the tab with the new list of items
+      // If there are items left, update the tab with the new list of items
       setTabData({
         ...tabData,
         [tabId]: { ...tabData[tabId], items: newItems },
       });
+
+      // Update the notes order in the database
+      if (userId) {
+        try {
+          await updateNotesOrder(userId, tabId, newItems);
+        } catch (error) {
+          // Handle error
+        }
+      }
     }
 
-    if (userId && tabData[tabId]) {
+    // Delete the item from the notes collection
+    if (userId) {
       try {
         const itemDoc = doc(db, "notes", itemUUID);
         await deleteDoc(itemDoc);
       } catch (error) {
-        // console.error("Error deleting document: ", error);
+        // Handle error
+      }
+    }
+  };
+
+  const deleteTab = async (tabId: string) => {
+    const newTabData = { ...tabData };
+    delete newTabData[tabId];
+
+    // Determine the next tab to make the current tab
+    const tabIds = Object.keys(newTabData);
+    const nextTabId = tabIds.length > 0 ? tabIds[0] : "0";
+    if (nextTabId === "0") {
+      newTabData["0"] = {
+        name: "Home",
+        items: [],
+        tabNameEditable: false,
+      };
+    }
+    setTabData(newTabData);
+    setCurrentTab(nextTabId);
+
+    // Update the tabs collection by deleting the tab
+    if (userId) {
+      try {
+        const tabDoc = doc(db, "tabs", tabId);
+        deleteDoc(tabDoc);
+
+        // Delete the tab from the notes_order collection
+        const notesOrderDoc = doc(db, "note_order", `${userId}_${tabId}`);
+        deleteDoc(notesOrderDoc);
+      } catch (error) {
+        // Handle error
       }
     }
   };
@@ -286,10 +320,8 @@ export const useFirestore = (userId: string | null) => {
   useEffect(() => {
     const reorderItems = () => {
       const updatedTabData = { ...tabData };
-      console.log(JSON.stringify(tabData));
 
       Object.keys(notesOrder).forEach((tabId) => {
-        console.log(tabId);
         if (updatedTabData[tabId]) {
           const orderedItems = notesOrder[tabId]
             .map((itemId) =>

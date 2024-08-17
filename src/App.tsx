@@ -45,12 +45,11 @@ const App: React.FC = () => {
     handleKeyPress,
     moveItemWrapper,
     noNotes,
-  } = useAppLogic(user);
+  } = useAppLogic(user, isMobile);
 
   useEffect(() => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
-
   return (
     <div>
       <Container fluid>
@@ -83,7 +82,7 @@ const App: React.FC = () => {
           <Tabs
             id="controlled-tab-example"
             activeKey={currentTab}
-            onSelect={(k) => setCurrentTab(k || "0")}
+            onSelect={(k) => setCurrentTab(k || Object.keys(tabData)[0])}
             style={{ marginTop: "5px" }}
           >
             {Object.keys(tabData).map((tabKey) => (
