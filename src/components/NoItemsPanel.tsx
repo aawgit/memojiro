@@ -9,7 +9,7 @@ const NoItemsPanel: React.FC<Props> = ({ handleInputKeyDown }) => (
     className="macos-panel"
     style={{ width: "300px", height: "300px", margin: "auto" }}
   >
-    <h5>Memojiro is an app for taking notes.</h5>
+    <h5>Memojiro is an app for taking notes. It's free.</h5>
 
     <input
       type="text"

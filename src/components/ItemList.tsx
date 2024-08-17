@@ -33,7 +33,7 @@ interface ItemListProps {
   editingItem?: number | null;
   // handleCloseClick?: () => void;
   handleDescriptionChange?: (index: number, newDescription: string) => void;
-  saveOnCloud: (newDescription: string) => void; // New prop for saving to cloud
+  saveOnCloud: () => void; // New prop for saving to cloud
   loggedIn: boolean;
   tabNames: { [key: string]: string }; // New prop for tab names
   moveItem: (sourceIndex: number, destinationTabId: string) => void; // New prop for moving items
