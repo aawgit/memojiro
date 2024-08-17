@@ -148,8 +148,12 @@ export const useFirestore = (userId: string | null) => {
         }
       };
 
-      fetchTabsAndItems();
-      fetchAllNotesOrder(userId);
+      const fetchNotesAndOrder = async () => {
+        await fetchTabsAndItems();
+        await fetchAllNotesOrder(userId);
+      };
+
+      fetchNotesAndOrder();
     }
   }, [userId]);
 
@@ -282,8 +286,10 @@ export const useFirestore = (userId: string | null) => {
   useEffect(() => {
     const reorderItems = () => {
       const updatedTabData = { ...tabData };
+      console.log(JSON.stringify(tabData));
 
       Object.keys(notesOrder).forEach((tabId) => {
+        console.log(tabId);
         if (updatedTabData[tabId]) {
           const orderedItems = notesOrder[tabId]
             .map((itemId) =>
@@ -385,17 +391,18 @@ export const useFirestore = (userId: string | null) => {
   };
 
   const upsertTab = async (tabId: string, tabName: string) => {
-    const tabDocRef = doc(db, "tabs", `${userId}_${tabId}`);
-    setDoc(
-      tabDocRef,
-      { name: tabName, userId: userId, tabId: tabId },
-      { merge: true }
-    );
-
     setTabData({
       ...tabData,
       [tabId]: { ...tabData[tabId], name: tabName, tabNameEditable: false },
     });
+    if (userId) {
+      const tabDocRef = doc(db, "tabs", `${userId}_${tabId}`);
+      setDoc(
+        tabDocRef,
+        { name: tabName, userId: userId, tabId: tabId },
+        { merge: true }
+      );
+    }
   };
 
   return {
