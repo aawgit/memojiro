@@ -25,6 +25,7 @@ const TabTitle: React.FC<TabTitleProps> = ({
     <input
       type="text"
       value={tabData[tabKey].name}
+      style={{ borderRadius: "5px" }}
       autoFocus
       onChange={(e) => handleTitleChange(tabKey, e.target.value)}
       onBlur={(e) => handleBlur(tabKey, e.target.value)}

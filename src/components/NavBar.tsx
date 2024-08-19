@@ -6,7 +6,7 @@ const NavBarC: React.FC = () => {
       expand="lg"
       className="bg-body-tertiary"
       bg="dark"
-      data-bs-theme="dark"
+      // data-bs-theme="dark"
       // style={{ backgroundColor: "#29648a" }}
     >
       <Container fluid>

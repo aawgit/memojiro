@@ -51,7 +51,7 @@ const App: React.FC = () => {
   }, []);
   return (
     <div>
-      <Container fluid>
+      <Container fluid className="main-container">
         <Row>
           <NavBarC />
           {!user && (
@@ -82,7 +82,7 @@ const App: React.FC = () => {
             id="controlled-tab-example"
             activeKey={currentTab}
             onSelect={(k) => setCurrentTab(k || Object.keys(tabData)[0])}
-            style={{ marginTop: "5px" }}
+            // style={{ marginTop: "5px" }}
           >
             {Object.keys(tabData).map((tabKey) => (
               <Tab
@@ -99,7 +99,7 @@ const App: React.FC = () => {
                 }
                 key={tabKey}
               >
-                <Row className="macos-content">
+                <Row className="app-content">
                   {isMobile ? (
                     <Col>
                       <ItemList
@@ -130,7 +130,7 @@ const App: React.FC = () => {
                     </Col>
                   ) : (
                     <>
-                      <Col md={3} className="macos-panel">
+                      <Col md={3} className="app-panel">
                         <ItemList
                           items={tabData[tabKey].items}
                           inputVisible={inputVisible}
@@ -157,7 +157,7 @@ const App: React.FC = () => {
                           moveItem={moveItemWrapper}
                         />
                       </Col>
-                      <Col md={5} className="macos-panel">
+                      <Col md={5} className="app-panel">
                         {editingItem !== null &&
                           tabData[tabKey].items[editingItem] && (
                             <ItemDetail
@@ -181,7 +181,7 @@ const App: React.FC = () => {
                         )}
                       </Col>
 
-                      <Col md={3} className="macos-panel">
+                      <Col md={3} className="app-panel">
                         {/* Review
                         <p>
                           <i>Nothing so far...</i>

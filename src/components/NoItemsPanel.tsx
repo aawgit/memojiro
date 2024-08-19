@@ -6,7 +6,7 @@ interface Props {
 
 const NoItemsPanel: React.FC<Props> = ({ handleInputKeyDown }) => (
   <div
-    className="macos-panel"
+    className="app-panel"
     style={{ width: "300px", height: "300px", margin: "auto" }}
   >
     <h5>Memojiro is an app for taking notes. It's free.</h5>
