@@ -7,7 +7,6 @@ import {
   BtnNumberedList,
   BtnLink,
 } from "react-simple-wysiwyg";
-import "../styles/ItemDetail.css"; // Create this file for ItemDetail specific styles
 import { Button } from "react-bootstrap";
 
 interface ItemDetailProps {

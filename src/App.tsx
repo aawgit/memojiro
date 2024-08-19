@@ -14,7 +14,6 @@ import TabTitle from "./components/TabTitle";
 import { Item } from "./hooks/useFirestore";
 import NoItemsPanel from "./components/NoItemsPanel";
 import "./styles/App.css";
-import "./styles/DesktopLayout.css";
 import "./styles/MobileLayout.css";
 import SearchNotes from "./components/SearchNotes";
 

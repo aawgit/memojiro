@@ -1,7 +1,0 @@
-/* Desktop specific styles */
-@media (min-width: 769px) {
-  .macos-container {
-    display: flex;
-    flex-direction: column;
-  }
-}
