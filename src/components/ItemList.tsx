@@ -5,7 +5,6 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import "../styles/ItemList.css"; // Create this file for ItemList specific styles
 import ItemDetail from "./ItemDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
