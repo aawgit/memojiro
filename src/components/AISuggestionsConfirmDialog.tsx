@@ -18,12 +18,12 @@ const AISuggestionsConfirmDialog: React.FC<AISuggestionsConfirmDialogProps> = ({
         <Modal.Title>Enable AI Suggestions</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Enabling AI suggestions will share your notes with a third party AI
-        model to provide personalized recommendations. Is that alright?
+        Enabling AI suggestions will share your notes with an external AI model
+        to provide personalized recommendations. Is that alright?
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onCancel}>
-          Cancel
+          No
         </Button>
         <Button variant="primary" onClick={onConfirm}>
           Yes, enable AI suggestions
