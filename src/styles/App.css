@@ -19,7 +19,7 @@
   display: flex;
   /* height: calc(100vh - 56px); Adjust according to navbar height */
   /* height: max-content; */
-  padding: 20px;
+  padding: 10px;
   min-height: 100vh;
 }
 
@@ -29,7 +29,7 @@
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin: 0 10px;
+  margin: 0 5px;
   flex-grow: 1;
 
   min-height: 100vh; /* Ensure the container covers the full viewport height */

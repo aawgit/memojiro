@@ -9,6 +9,8 @@ import {
   where,
   deleteDoc,
   setDoc,
+  DocumentData,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { getLocal } from "./usePersistentState";
@@ -36,6 +38,8 @@ export const useFirestore = (userId: string | null) => {
   const [currentTab, setCurrentTab] = useState<string>("0");
   const [loading, setLoading] = useState(false);
   const [notesOrder, setNotesOrder] = useState<NotesOrder>({});
+  const [review, setReview] = useState<DocumentData | null>(null);
+  const [aiEnabled, setAiEnabled] = useState(false);
 
   // TODO: Reconsider this block considering the current version.
   // Two cases
@@ -88,75 +92,108 @@ export const useFirestore = (userId: string | null) => {
     }
   };
 
+  const fetchTabsAndItems = async (userId: string) => {
+    setLoading(true);
+    try {
+      const notesQuery = query(
+        collection(db, "notes"),
+        where("userId", "==", userId)
+      );
+      const notesQuerySnapshot = await getDocs(notesQuery);
+
+      const tabsQuery = query(
+        collection(db, "tabs"),
+        where("userId", "==", userId)
+      );
+      const tabsQuerySnapshot = await getDocs(tabsQuery);
+      let tabDetails: tabDetails[] = [];
+      tabsQuerySnapshot.forEach((tq) => {
+        const data = tq.data();
+        tabDetails.push({ tabId: data.tabId, name: data.name });
+      });
+
+      const fetchedTabData: TabData = {};
+
+      notesQuerySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const tabId = data.tabId;
+        //const tabName = data.tabName;
+        let tabName: string | undefined;
+        if (tabDetails)
+          tabName = tabDetails.find((td) => td.tabId === tabId)?.name;
+        else tabName = "no name";
+        const item: Item = {
+          title: data.noteTitle,
+          description: data.description,
+          itemId: doc.id,
+        };
+
+        if (!fetchedTabData[tabId]) {
+          fetchedTabData[tabId] = {
+            name: tabName ? tabName : "no name",
+            items: [],
+            tabNameEditable: false,
+          };
+        }
+        fetchedTabData[tabId].items.push(item);
+      });
+
+      if (Object.keys(fetchedTabData).length > 0) {
+        setTabData(fetchedTabData);
+        const tabIds = Object.keys(fetchedTabData);
+        const nextTabId = tabIds.length > 0 ? tabIds[0] : "0";
+        setCurrentTab(nextTabId);
+      } else {
+        if (tabData) {
+          pushTabDatatoDB(tabData, userId);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchNotesAndOrder = async (userId: string) => {
+    await fetchTabsAndItems(userId);
+    await fetchAllNotesOrder(userId);
+  };
+
+  /**
+   * Function to get a review for a specific user from Firestore
+   * @param userId - The ID of the user whose review is to be fetched
+   * @returns - A promise that resolves to the review data or null if no review is found
+   */
+  async function fetchReview(userId: string) {
+    try {
+      const reviewsCollection = collection(db, "review");
+
+      // Create a query to find documents where userId matches
+      const q = query(reviewsCollection, where("userId", "==", userId));
+
+      // Execute the query
+      const querySnapshot = await getDocs(q);
+
+      // Check if any documents were found
+      if (!querySnapshot.empty) {
+        // Assuming there's only one document per userId, return the first document data
+        const reviewDoc = querySnapshot.docs[0];
+        setReview(reviewDoc.data());
+        if (reviewDoc.data()?.enabled) setAiEnabled(true);
+      } else {
+        // If no document is found, return null
+        console.log(`No review found for user with ID: ${userId}`);
+        return null;
+      }
+    } catch (error) {
+      console.error(`Error getting review for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
   useEffect(() => {
     if (userId) {
-      const fetchTabsAndItems = async () => {
-        setLoading(true);
-        try {
-          const notesQuery = query(
-            collection(db, "notes"),
-            where("userId", "==", userId)
-          );
-          const notesQuerySnapshot = await getDocs(notesQuery);
-
-          const tabsQuery = query(
-            collection(db, "tabs"),
-            where("userId", "==", userId)
-          );
-          const tabsQuerySnapshot = await getDocs(tabsQuery);
-          let tabDetails: tabDetails[] = [];
-          tabsQuerySnapshot.forEach((tq) => {
-            const data = tq.data();
-            tabDetails.push({ tabId: data.tabId, name: data.name });
-          });
-
-          const fetchedTabData: TabData = {};
-
-          notesQuerySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const tabId = data.tabId;
-            //const tabName = data.tabName;
-            let tabName: string | undefined;
-            if (tabDetails)
-              tabName = tabDetails.find((td) => td.tabId === tabId)?.name;
-            else tabName = "no name";
-            const item: Item = {
-              title: data.noteTitle,
-              description: data.description,
-              itemId: doc.id,
-            };
-
-            if (!fetchedTabData[tabId]) {
-              fetchedTabData[tabId] = {
-                name: tabName ? tabName : "no name",
-                items: [],
-                tabNameEditable: false,
-              };
-            }
-            fetchedTabData[tabId].items.push(item);
-          });
-
-          if (Object.keys(fetchedTabData).length > 0) {
-            setTabData(fetchedTabData);
-            const tabIds = Object.keys(fetchedTabData);
-            const nextTabId = tabIds.length > 0 ? tabIds[0] : "0";
-            setCurrentTab(nextTabId);
-          } else {
-            if (tabData) {
-              pushTabDatatoDB(tabData, userId);
-            }
-          }
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      const fetchNotesAndOrder = async () => {
-        await fetchTabsAndItems();
-        await fetchAllNotesOrder(userId);
-      };
-
-      fetchNotesAndOrder();
+      fetchNotesAndOrder(userId);
+      fetchReview(userId);
     }
   }, [userId]);
 
@@ -437,6 +474,31 @@ export const useFirestore = (userId: string | null) => {
     }
   };
 
+  const updateAiEnabledStatus = async (enabled: boolean) => {
+    if (userId)
+      try {
+        // Update the local state
+        setAiEnabled(enabled);
+        const reviewDocRef = doc(db, "review", userId);
+
+        // Check if the document exists
+        const reviewDoc = await getDoc(reviewDocRef);
+        if (reviewDoc.exists()) {
+          // If the document exists, update the 'enabled' field
+          await updateDoc(reviewDocRef, { enabled });
+        } else {
+          // If the document does not exist, create it with the 'enabled' field
+          await setDoc(reviewDocRef, {
+            userId,
+            enabled,
+            review: { urgent: [], easy: [] }, // Initialize with empty arrays
+          });
+        }
+      } catch (error) {
+        console.error("Error updating AI enabled status: ", error);
+      }
+  };
+
   return {
     tabData,
     addItem,
@@ -451,5 +513,8 @@ export const useFirestore = (userId: string | null) => {
     currentTab,
     setCurrentTab,
     upsertTab,
+    review,
+    aiEnabled,
+    updateAiEnabledStatus,
   };
 };

@@ -1,0 +1,25 @@
+.ai-suggestions-container {
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ai-suggestions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.ai-suggestions-status {
+  font-size: 1em;
+  color: #555;
+}
+
+.ai-suggestions-content {
+  margin-top: 10px;
+  font-size: 1em;
+  color: #333;
+}
