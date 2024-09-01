@@ -1,7 +1,9 @@
+import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import AuthButton from "./AuthButton";
 
-// Define the props type
 interface NavBarCProps {
   onAISuggestionsClick?: () => void;
 }
@@ -12,16 +14,16 @@ const NavBarC: React.FC<NavBarCProps> = ({ onAISuggestionsClick }) => {
       expand="lg"
       className="bg-body-tertiary"
       bg="dark"
-      // style={{ backgroundColor: "#eae7dc" }}
+      style={{ backgroundColor: "#eae7dc" }}
     >
       <Container fluid>
         <Navbar.Brand href="#">memojiro</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="justify-content-end">
-          <Nav >
+          <Nav>
             {onAISuggestionsClick && (
               <Nav.Link onClick={onAISuggestionsClick}>
-                Suggestions by AI
+                <FontAwesomeIcon icon={faRobot} /> AI Suggestions
               </Nav.Link>
             )}
             <AuthButton />
