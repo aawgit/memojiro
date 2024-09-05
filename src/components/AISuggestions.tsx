@@ -43,7 +43,7 @@ const AISuggestions: React.FC<AISuggestionsProps> = ({
   return (
     <div className="ai-suggestions-container">
       <div className="ai-suggestions-header">
-        <h2>Suggestions by AI</h2>
+        <h5>Suggestions by AI</h5>
         <Form.Check
           type="switch"
           id="ai-toggle"

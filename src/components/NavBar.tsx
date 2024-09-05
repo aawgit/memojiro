@@ -1,12 +1,19 @@
+import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import AuthButton from "./AuthButton";
-const NavBarC: React.FC = () => {
+
+interface NavBarCProps {
+  onAISuggestionsClick?: () => void;
+}
+
+const NavBarC: React.FC<NavBarCProps> = ({ onAISuggestionsClick }) => {
   return (
     <Navbar
       expand="lg"
       className="bg-body-tertiary"
       bg="dark"
-      // data-bs-theme="dark"
       style={{ backgroundColor: "#eae7dc" }}
     >
       <Container fluid>
@@ -14,6 +21,11 @@ const NavBarC: React.FC = () => {
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="justify-content-end">
           <Nav>
+            {onAISuggestionsClick && (
+              <Nav.Link onClick={onAISuggestionsClick}>
+                <FontAwesomeIcon icon={faRobot} /> AI Suggestions
+              </Nav.Link>
+            )}
             <AuthButton />
           </Nav>
         </Navbar.Collapse>
@@ -21,4 +33,5 @@ const NavBarC: React.FC = () => {
     </Navbar>
   );
 };
+
 export default NavBarC;

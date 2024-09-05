@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Tabs, Tab, Alert } from "react-bootstrap";
-import { Spinner } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Tabs,
+  Tab,
+  Alert,
+  Spinner,
+  Modal,
+  Button,
+} from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../firebaseConfig";
@@ -54,15 +63,29 @@ const App: React.FC = () => {
     {}
   );
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showAISuggestionsModal, setShowAISuggestionsModal] = useState(false);
 
   useEffect(() => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
+
+  const handleAISuggestionsClick = () => {
+    setShowAISuggestionsModal(true);
+  };
+
+  const handleAISuggestionsClose = () => {
+    setShowAISuggestionsModal(false);
+  };
+
   return (
     <div>
       <Container fluid className="main-container">
         <Row>
-          <NavBarC />
+          <NavBarC
+            onAISuggestionsClick={
+              isMobile && user ? handleAISuggestionsClick : undefined
+            }
+          />
           {!user && (
             <Alert key="warning" variant="warning" dismissible>
               Notes are saved in the browser and will be available the next time
@@ -79,10 +102,8 @@ const App: React.FC = () => {
         )}
         {noNotes && (
           <>
-            <br></br>
-            <NoItemsPanel
-              handleInputKeyDown={handleInputKeyDown}
-            ></NoItemsPanel>
+            <br />
+            <NoItemsPanel handleInputKeyDown={handleInputKeyDown} />
           </>
         )}
 
@@ -91,7 +112,6 @@ const App: React.FC = () => {
             id="controlled-tab-example"
             activeKey={currentTab}
             onSelect={(k) => setCurrentTab(k || Object.keys(tabData)[0])}
-            // style={{ marginTop: "5px" }}
           >
             {Object.keys(tabData).map((tabKey) => (
               <Tab
@@ -124,7 +144,6 @@ const App: React.FC = () => {
                           >
                         }
                         editingItem={editingItem}
-                        // handleCloseClick={handleCloseClick}
                         handleDescriptionChange={handleDescriptionChange}
                         saveOnCloud={saveOnCloud}
                         loggedIn={!!user}
@@ -171,7 +190,6 @@ const App: React.FC = () => {
                           tabData[tabKey].items[editingItem] && (
                             <ItemDetail
                               item={tabData[tabKey].items[editingItem]}
-                              // handleCloseClick={handleCloseClick}
                               handleDescriptionChange={(newDescription) =>
                                 handleDescriptionChange(
                                   editingItem,
@@ -232,6 +250,33 @@ const App: React.FC = () => {
             )}
           </Tabs>
         )}
+
+        {/* AI Suggestions Modal for Mobile */}
+        <Modal
+          show={showAISuggestionsModal}
+          onHide={handleAISuggestionsClose}
+          centered
+        >
+          <Modal.Header closeButton>
+            
+          </Modal.Header>
+          <Modal.Body>
+            {user && (
+              <AISuggestions
+                review={review}
+                aiEnabled={aiEnabled}
+                updateAiEnabledStatus={updateAiEnabledStatus}
+                showConfirmDialog={showConfirmation}
+                setShowConfirmDialog={setShowConfirmation}
+              />
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleAISuggestionsClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Container>
     </div>
   );
