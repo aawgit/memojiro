@@ -3,13 +3,18 @@ import { Item, TabData } from "../hooks/useFirestore"; // Adjust the path as nec
 
 interface SearchNotesProps {
   tabData: TabData;
+  searchResults: { [key: string]: Item[] };
+  setSearchResults: React.Dispatch<
+    React.SetStateAction<{ [key: string]: Item[] }>
+  >;
 }
 
-const SearchNotes: React.FC<SearchNotesProps> = ({ tabData }) => {
+const SearchNotes: React.FC<SearchNotesProps> = ({
+  tabData,
+  searchResults,
+  setSearchResults,
+}) => {
   const [searchText, setSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState<{ [key: string]: Item[] }>(
-    {}
-  );
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchText.trim() !== "") {
@@ -34,6 +39,7 @@ const SearchNotes: React.FC<SearchNotesProps> = ({ tabData }) => {
       setSearchText("");
     }
   };
+
   return (
     <div className="search-notes">
       <input
@@ -47,7 +53,7 @@ const SearchNotes: React.FC<SearchNotesProps> = ({ tabData }) => {
       <div className="search-results">
         {Object.keys(searchResults).map((tabName, index) => (
           <div key={index}>
-            <br></br>
+            <br />
             <h5>{tabName}</h5>
             <ul>
               {searchResults[tabName].map((item, itemIndex) => (

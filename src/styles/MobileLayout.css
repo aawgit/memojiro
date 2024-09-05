@@ -1,20 +1,20 @@
 /* Mobile specific styles */
 @media (max-width: 768px) {
-  .macos-container {
+  .app-container {
     display: flex;
     flex-direction: column;
   }
 
-  .macos-content {
+  .app-content {
     flex-direction: column;
     padding: 10px;
   }
 
-  .macos-panel {
+  .app-panel {
     margin-bottom: 10px;
   }
 
-  .macos-detail-view {
+  .app-detail-view {
     background: linear-gradient(145deg, #d0cdcd, #a6a4a4);
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -22,7 +22,7 @@
     margin-top: 10px;
   }
 
-  .macos-close-button {
+  .app-close-button {
     font-size: 1.5em;
     color: #ff8c00;
     background: none;
@@ -31,7 +31,7 @@
     cursor: pointer;
   }
 
-  .macos-textarea {
+  .app-textarea {
     width: 100%;
     height: 200px;
     border: none;

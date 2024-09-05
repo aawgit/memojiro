@@ -49,7 +49,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
 
   return (
     <>
-      {!isMobile && <h4 className="macos-section-title">{item.title}</h4>}
+      {!isMobile && <h4 className="app-section-title">{item.title}</h4>}
       {isMobile && <br></br>}
       {/* <Container className="large-text-area-container"> */}
       {/* <div className="close-button" onClick={handleCloseClick}>

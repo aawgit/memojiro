@@ -24,6 +24,9 @@ const useAppLogic = (user: any, isMobile: boolean) => {
     currentTab,
     setCurrentTab,
     upsertTab,
+    review,
+    aiEnabled,
+    updateAiEnabledStatus,
   } = useFirestore(user?.uid || null);
 
   const [inputVisible, setInputVisible] = useState(false);
@@ -165,6 +168,9 @@ const useAppLogic = (user: any, isMobile: boolean) => {
     itemToDelete,
     moveItemWrapper,
     noNotes,
+    review,
+    aiEnabled,
+    updateAiEnabledStatus,
   };
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Tabs, Tab, Alert } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
@@ -16,6 +16,7 @@ import NoItemsPanel from "./components/NoItemsPanel";
 import "./styles/App.css";
 import "./styles/MobileLayout.css";
 import SearchNotes from "./components/SearchNotes";
+import AISuggestions from "./components/AISuggestions";
 
 const App: React.FC = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -44,14 +45,22 @@ const App: React.FC = () => {
     handleKeyPress,
     moveItemWrapper,
     noNotes,
+    review,
+    aiEnabled,
+    updateAiEnabledStatus,
   } = useAppLogic(user, isMobile);
+
+  const [searchResults, setSearchResults] = useState<{ [key: string]: Item[] }>(
+    {}
+  );
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     logEvent(analytics, "page_view", { page_title: "Home" });
   }, []);
   return (
     <div>
-      <Container fluid>
+      <Container fluid className="main-container">
         <Row>
           <NavBarC />
           {!user && (
@@ -82,7 +91,7 @@ const App: React.FC = () => {
             id="controlled-tab-example"
             activeKey={currentTab}
             onSelect={(k) => setCurrentTab(k || Object.keys(tabData)[0])}
-            style={{ marginTop: "5px" }}
+            // style={{ marginTop: "5px" }}
           >
             {Object.keys(tabData).map((tabKey) => (
               <Tab
@@ -99,7 +108,7 @@ const App: React.FC = () => {
                 }
                 key={tabKey}
               >
-                <Row className="macos-content">
+                <Row className="app-content">
                   {isMobile ? (
                     <Col>
                       <ItemList
@@ -130,7 +139,7 @@ const App: React.FC = () => {
                     </Col>
                   ) : (
                     <>
-                      <Col md={3} className="macos-panel">
+                      <Col md={3} className="app-panel">
                         <ItemList
                           items={tabData[tabKey].items}
                           inputVisible={inputVisible}
@@ -157,7 +166,7 @@ const App: React.FC = () => {
                           moveItem={moveItemWrapper}
                         />
                       </Col>
-                      <Col md={5} className="macos-panel">
+                      <Col md={5} className="app-panel">
                         {editingItem !== null &&
                           tabData[tabKey].items[editingItem] && (
                             <ItemDetail
@@ -181,12 +190,21 @@ const App: React.FC = () => {
                         )}
                       </Col>
 
-                      <Col md={3} className="macos-panel">
-                        {/* Review
-                        <p>
-                          <i>Nothing so far...</i>
-                        </p> */}
-                        <SearchNotes tabData={tabData} />
+                      <Col md={3} className="app-panel">
+                        <SearchNotes
+                          tabData={tabData}
+                          searchResults={searchResults}
+                          setSearchResults={setSearchResults}
+                        />
+                        {user && (
+                          <AISuggestions
+                            review={review}
+                            aiEnabled={aiEnabled}
+                            updateAiEnabledStatus={updateAiEnabledStatus}
+                            showConfirmDialog={showConfirmation}
+                            setShowConfirmDialog={setShowConfirmation}
+                          />
+                        )}
                       </Col>
                     </>
                   )}

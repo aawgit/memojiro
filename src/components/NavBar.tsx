@@ -6,8 +6,8 @@ const NavBarC: React.FC = () => {
       expand="lg"
       className="bg-body-tertiary"
       bg="dark"
-      data-bs-theme="dark"
-      // style={{ backgroundColor: "#29648a" }}
+      // data-bs-theme="dark"
+      style={{ backgroundColor: "#eae7dc" }}
     >
       <Container fluid>
         <Navbar.Brand href="#">memojiro</Navbar.Brand>
