@@ -43,7 +43,7 @@ const db = getFirestore(app);
 
 export { app, analytics, auth, provider, db };
 ```
-### Set up firebase
+Then we can install dependencies and run the project.
  - `npm i`
  - `npm run dev`
 
