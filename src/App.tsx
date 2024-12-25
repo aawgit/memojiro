@@ -22,8 +22,6 @@ import useAppLogic from "./hooks/useAppLogic";
 import TabTitle from "./components/TabTitle";
 import { Item } from "./hooks/useFirestore";
 import NoItemsPanel from "./components/NoItemsPanel";
-import "./styles/App.css";
-import "./styles/MobileLayout.css";
 import SearchNotes from "./components/SearchNotes";
 import AISuggestions from "./components/AISuggestions";
 
@@ -79,13 +77,13 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <Container fluid className="main-container">
-        <Row>
-          <NavBarC
+      <NavBarC
             onAISuggestionsClick={
               isMobile && user ? handleAISuggestionsClick : undefined
             }
           />
+      <div className="app-container">
+        <Row>
           {!user && (
             <Alert key="warning" variant="warning" dismissible>
               Notes are saved in the browser and will be available the next time
@@ -129,103 +127,32 @@ const App: React.FC = () => {
                 key={tabKey}
               >
                 <Row className="app-content">
-                  {isMobile ? (
-                    <Col>
-                      <ItemList
-                        items={tabData[tabKey].items}
-                        inputVisible={inputVisible}
-                        handleAddClick={handleAddClick}
-                        handleInputKeyDown={handleInputKeyDown}
-                        handleItemClick={handleItemClick}
-                        handleDeleteClick={handleDeleteClick}
-                        setItems={
-                          setItems as React.Dispatch<
-                            React.SetStateAction<Item[]>
-                          >
+                  <Col>
+                    <ItemList
+                      items={tabData[tabKey].items}
+                      inputVisible={inputVisible}
+                      handleAddClick={handleAddClick}
+                      handleInputKeyDown={handleInputKeyDown}
+                      handleItemClick={handleItemClick}
+                      handleDeleteClick={handleDeleteClick}
+                      setItems={
+                        setItems as React.Dispatch<
+                          React.SetStateAction<Item[]>
+                        >
+                      }
+                      editingItem={editingItem}
+                      handleDescriptionChange={handleDescriptionChange}
+                      saveOnCloud={saveOnCloud}
+                      loggedIn={!!user}
+                      tabNames={Object.keys(tabData).reduce((acc, tabId) => {
+                        if (tabId !== currentTab) {
+                          acc[tabId] = tabData[tabId].name;
                         }
-                        editingItem={editingItem}
-                        handleDescriptionChange={handleDescriptionChange}
-                        saveOnCloud={saveOnCloud}
-                        loggedIn={!!user}
-                        tabNames={Object.keys(tabData).reduce((acc, tabId) => {
-                          if (tabId !== currentTab) {
-                            acc[tabId] = tabData[tabId].name;
-                          }
-                          return acc;
-                        }, {} as { [key: string]: string })}
-                        moveItem={moveItemWrapper}
-                      />
-                    </Col>
-                  ) : (
-                    <>
-                      <Col md={3} className="app-panel">
-                        <ItemList
-                          items={tabData[tabKey].items}
-                          inputVisible={inputVisible}
-                          handleAddClick={handleAddClick}
-                          handleInputKeyDown={handleInputKeyDown}
-                          handleItemClick={handleItemClick}
-                          handleDeleteClick={handleDeleteClick}
-                          setItems={
-                            setItems as React.Dispatch<
-                              React.SetStateAction<Item[]>
-                            >
-                          }
-                          saveOnCloud={saveOnCloud}
-                          loggedIn={!!user}
-                          tabNames={Object.keys(tabData).reduce(
-                            (acc, tabId) => {
-                              if (tabId !== currentTab) {
-                                acc[tabId] = tabData[tabId].name;
-                              }
-                              return acc;
-                            },
-                            {} as { [key: string]: string }
-                          )}
-                          moveItem={moveItemWrapper}
-                        />
-                      </Col>
-                      <Col md={5} className="app-panel">
-                        {editingItem !== null &&
-                          tabData[tabKey].items[editingItem] && (
-                            <ItemDetail
-                              item={tabData[tabKey].items[editingItem]}
-                              handleDescriptionChange={(newDescription) =>
-                                handleDescriptionChange(
-                                  editingItem,
-                                  newDescription
-                                )
-                              }
-                              saveOnCloud={saveOnCloud}
-                              loggedIn={!!user}
-                              isMobile={false}
-                            />
-                          )}
-                        {editingItem == null && (
-                          <p>
-                            <i>Select a note title to view the content.</i>
-                          </p>
-                        )}
-                      </Col>
-
-                      <Col md={3} className="app-panel">
-                        <SearchNotes
-                          tabData={tabData}
-                          searchResults={searchResults}
-                          setSearchResults={setSearchResults}
-                        />
-                        {user && (
-                          <AISuggestions
-                            review={review}
-                            aiEnabled={aiEnabled}
-                            updateAiEnabledStatus={updateAiEnabledStatus}
-                            showConfirmDialog={showConfirmation}
-                            setShowConfirmDialog={setShowConfirmation}
-                          />
-                        )}
-                      </Col>
-                    </>
-                  )}
+                        return acc;
+                      }, {} as { [key: string]: string })}
+                      moveItem={moveItemWrapper}
+                    />
+                  </Col>
                   {showConfirmDialog && itemToDelete != null && (
                     <ConfirmDialog
                       handleConfirmDelete={handleConfirmDelete}
@@ -258,7 +185,7 @@ const App: React.FC = () => {
           centered
         >
           <Modal.Header closeButton>
-            
+
           </Modal.Header>
           <Modal.Body>
             {user && (
@@ -277,7 +204,7 @@ const App: React.FC = () => {
             </Button>
           </Modal.Footer>
         </Modal>
-      </Container>
+      </div>
     </div>
   );
 };

@@ -12,9 +12,9 @@ const NavBarC: React.FC<NavBarCProps> = ({ onAISuggestionsClick }) => {
   return (
     <Navbar
       expand="lg"
-      className="bg-body-tertiary"
+      // className="bg-body-tertiary"
       bg="dark"
-      style={{ backgroundColor: "#eae7dc" }}
+      style={{ backgroundColor: "#000", color: "#000" }}
     >
       <Container fluid>
         <Navbar.Brand href="#">memojiro</Navbar.Brand>

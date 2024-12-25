@@ -1,5 +1,4 @@
 import React from "react";
-import "../styles/ConfirmDialog.css"; // Create this file for ConfirmDialog specific styles
 
 interface ConfirmDialogProps {
   handleConfirmDelete: () => void;
