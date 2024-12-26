@@ -24,6 +24,7 @@ import { Item } from "./hooks/useFirestore";
 import NoItemsPanel from "./components/NoItemsPanel";
 import SearchNotes from "./components/SearchNotes";
 import AISuggestions from "./components/AISuggestions";
+import NavBarV2 from "./components/NavBarV2";
 
 const App: React.FC = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -77,7 +78,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <NavBarC
+      <NavBarV2
             onAISuggestionsClick={
               isMobile && user ? handleAISuggestionsClick : undefined
             }
@@ -104,7 +105,6 @@ const App: React.FC = () => {
             <NoItemsPanel handleInputKeyDown={handleInputKeyDown} />
           </>
         )}
-
         {!noNotes && (
           <Tabs
             id="controlled-tab-example"

@@ -49,8 +49,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
 
   return (
     <>
-      {!isMobile && <h4 className="app-section-title">{item.title}</h4>}
-      {isMobile && <br></br>}
+
       {/* <Container className="large-text-area-container"> */}
       {/* <div className="close-button" onClick={handleCloseClick}>
         &times;
@@ -59,13 +58,14 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
         <Editor
           value={editedDescription}
           onChange={(e) => handleEditorChange(e.target.value)}
-          containerProps={{
-            style: {
-              background: "white",
-              // borderRadius: "12px",
-              border: "1px solid #ccc",
-            },
-          }}
+          // containerProps={{
+          //   style: {
+          //     background: "#406194",
+          //     // borderRadius: "12px",
+          //     border: "0px solid #ccc",
+          //     color: "white"
+          //   },
+          // }}
         >
           <Toolbar>
             <BtnBulletList />

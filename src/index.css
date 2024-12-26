@@ -1,7 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
+    background-color: #000;
 }
 
 :root {
@@ -24,10 +29,27 @@ body {
   }
 
 .nav-bar {
+    font-family: "Lexend", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     background-color: #000;
-    color: #000;
+    color: #d1d5db;
     padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    /* padding: 10px 20px; */
 }
+
+.nav-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: lighter;
+  }
+  
+  .auth-button-container {
+    display: flex;
+    align-items: center;
+  }
 
 .app-content {
     display: flex;
