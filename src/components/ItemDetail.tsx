@@ -8,6 +8,7 @@ import {
   BtnLink,
 } from "react-simple-wysiwyg";
 import { Button } from "react-bootstrap";
+import CustomEditor from "./CustomEditor";
 
 interface ItemDetailProps {
   item: {
@@ -54,26 +55,10 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
       {/* <div className="close-button" onClick={handleCloseClick}>
         &times;
       </div> */}
-      <EditorProvider>
-        <Editor
-          value={editedDescription}
-          onChange={(e) => handleEditorChange(e.target.value)}
-          // containerProps={{
-          //   style: {
-          //     background: "#406194",
-          //     // borderRadius: "12px",
-          //     border: "0px solid #ccc",
-          //     color: "white"
-          //   },
-          // }}
-        >
-          <Toolbar>
-            <BtnBulletList />
-            <BtnNumberedList />
-            <BtnLink />
-          </Toolbar>
-        </Editor>
-      </EditorProvider>
+      <CustomEditor
+  value={editedDescription}
+  onChange={handleEditorChange}
+/>
       {/* </Container> */}
       <br></br>
       {loggedIn && (

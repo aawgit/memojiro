@@ -6,7 +6,7 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background-color: #000;
+    background-color: #0f1014;
 }
 
 :root {
@@ -17,20 +17,20 @@ body {
     margin: 0 auto;
     padding: 2rem;
     /* text-align: center; */
-    background-color: #000;
+    background-color: #0f1014;
 }
 
 .app-container {
     font-family: "Lexend", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     min-height: 100vh;
-    background-color: #000;
+    background-color: #0f1014;
     color: #d1d5db;
     padding: 0;
   }
 
 .nav-bar {
     font-family: "Lexend", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    background-color: #000;
+    background-color: #0f1014;
     color: #d1d5db;
     padding: 0;
     display: flex;
@@ -156,12 +156,32 @@ body {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color:#3e4250;
+    color: #ffffff;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
 
 .item-title {
+    margin-top: 0.5%;
     flex-grow: 1;
+    /* font-weight: 500; */
+    margin-bottom: 0.5rem;
 }
+
+.custom-editor-textarea {
+    margin-top: 5px;
+    padding: 10px;
+    min-height: 100px;
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 5px;
+    background: #000000;
+    color: #ccc;
+    height: auto;
+    /* border: 2px solid #FF5733 !important; Ensure override */
+  }
+  
 
 .item-icons {
     display: flex;
@@ -381,11 +401,6 @@ body {
     text-decoration: none;
     color: inherit;
     display: block;
-}
-
-.item-title {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
 }
 
 .item-description {
