@@ -412,3 +412,21 @@ body {
     font-size: 0.75rem;
     color: #6b7280;
 }
+
+.ProseMirror {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    min-height: 150px;
+    font-family: inherit;
+    font-size: inherit;
+    background-color: #000;
+    color: #fff;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  
+  .ProseMirror:focus {
+    outline: 2px solid #007BFF;
+  }
+  

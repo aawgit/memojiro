@@ -75,6 +75,10 @@ const App: React.FC = () => {
   const handleAISuggestionsClose = () => {
     setShowAISuggestionsModal(false);
   };
+  if (typeof global === 'undefined') {
+    window.global = window;
+  }
+  
 
   return (
     <div>
