@@ -32,7 +32,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ value, onChange }) => {
     editorProps: {
       attributes: {
         class:
-          "ProseMirror focus:outline-none border border-gray-300 rounded-md p-3 bg-black text-white leading-tight whitespace-pre-wrap",
+          "ProseMirror focus:outline-none  border-gray-300 rounded-md p-3 bg-black text-white leading-tight whitespace-pre-wrap",
       },
       handleKeyDown(view, event) {
         if (event.key === "Tab") {

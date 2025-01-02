@@ -234,7 +234,7 @@ body {
 }
 
 .confirm-dialog {
-    background: white;
+    background: #3e4250;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -414,8 +414,9 @@ body {
 }
 
 .ProseMirror {
-    border: 1px solid #ccc;
+    border: 2px solid #ccc;
     border-radius: 5px;
+    margin-top: 5px;
     padding: 10px;
     min-height: 150px;
     font-family: inherit;
@@ -427,6 +428,7 @@ body {
   }
   
   .ProseMirror:focus {
-    outline: 2px solid #007BFF;
+    outline: 0px dashed #ccc;
+    border: 2px dashed #ccc;
   }
   

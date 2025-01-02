@@ -1,12 +1,4 @@
 import React, { useState, useEffect } from "react";
-import {
-  Editor,
-  Toolbar,
-  EditorProvider,
-  BtnBulletList,
-  BtnNumberedList,
-  BtnLink,
-} from "react-simple-wysiwyg";
 import { Button } from "react-bootstrap";
 import CustomEditor from "./CustomEditor";
 
