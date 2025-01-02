@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Container,
   Row,
   Col,
   Tabs,
@@ -13,16 +12,13 @@ import {
 import { useMediaQuery } from "react-responsive";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../firebaseConfig";
-import NavBarC from "./components/NavBar";
 import ItemList from "./components/ItemList";
-import ItemDetail from "./components/ItemDetail";
 import ConfirmDialog from "./components/ConfirmDialog";
 import { useAuth } from "./hooks/useAuth";
 import useAppLogic from "./hooks/useAppLogic";
 import TabTitle from "./components/TabTitle";
 import { Item } from "./hooks/useFirestore";
 import NoItemsPanel from "./components/NoItemsPanel";
-import SearchNotes from "./components/SearchNotes";
 import AISuggestions from "./components/AISuggestions";
 import NavBarV2 from "./components/NavBarV2";
 
@@ -58,9 +54,9 @@ const App: React.FC = () => {
     updateAiEnabledStatus,
   } = useAppLogic(user, isMobile);
 
-  const [searchResults, setSearchResults] = useState<{ [key: string]: Item[] }>(
-    {}
-  );
+  // const [searchResults, setSearchResults] = useState<{ [key: string]: Item[] }>(
+  //   {}
+  // );
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showAISuggestionsModal, setShowAISuggestionsModal] = useState(false);
 

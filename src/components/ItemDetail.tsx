@@ -19,8 +19,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
   // handleCloseClick,
   handleDescriptionChange,
   saveOnCloud,
-  loggedIn,
-  isMobile,
+  loggedIn
 }) => {
   const [editedDescription, setEditedDescription] = useState(item.description);
   const [isChanged, setIsChanged] = useState(false);
