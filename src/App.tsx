@@ -75,8 +75,6 @@ const App: React.FC = () => {
     window.global = window;
   }
   
-  console.log(noNotes)
-  console.log(tabData)
   return (
     <div>
       <NavBarV2
@@ -164,7 +162,7 @@ const App: React.FC = () => {
                 </Row>
               </Tab>
             ))}
-            {user && (
+            {true && (
               <Tab
                 eventKey="<placeholder>"
                 title={

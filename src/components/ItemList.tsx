@@ -123,7 +123,7 @@ const ItemList: React.FC<ItemListProps> = ({
                         >
                           <FontAwesomeIcon icon={faTrash} />
                         </span>
-                        {loggedIn && (
+                        {true && (
                           <DropdownButton
                             id={`dropdown-${index}`}
                             className="move-item-dropdown"

@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { getLocal } from "./usePersistentState";
+import { generateTabId } from "../utils/utils";
 
 export interface Item {
   title: string;
@@ -35,7 +36,7 @@ interface NotesOrder {
 }
 
 export const useFirestore = (userId: string | null) => {
-  const [currentTab, setCurrentTab] = useState<string>("0");
+  const [currentTab, setCurrentTab] = useState<string>(generateTabId());
   const [loading, setLoading] = useState(false);
   const [notesOrder, setNotesOrder] = useState<NotesOrder>({});
   const [review, setReview] = useState<DocumentData | null>(null);
@@ -47,19 +48,26 @@ export const useFirestore = (userId: string | null) => {
   // 2. Logged in
   //    - First time
   //    - Not the first time
-
+  
+  // Checks if there is notes saved locally, and if not creates a default tab for new notes.
   const [tabData, setTabData] = useState<TabData>(() => {
     const savedData = getLocal("tabData");
-    return savedData
-      ? savedData
-      : {
-          "0": {
-            name: "Home",
-            items: getLocal("items") ? getLocal("items") : [],
-            tabNameEditable: false,
-          },
-        };
+    if (savedData) {
+      setCurrentTab(Object.keys(savedData)[0])
+      return savedData;
+    } else {
+      const tabIdx = generateTabId();
+      const dummyTab: TabData = {
+        [tabIdx]: { 
+          name: "Home",
+          items: getLocal("items") || [], // Simplify check for local items
+          tabNameEditable: false,
+        },
+      };
+      return dummyTab;
+    }
   });
+  
 
   const [noNotes, setNoNotes] = useState<boolean>(false);
 
@@ -82,6 +90,8 @@ export const useFirestore = (userId: string | null) => {
           ...tabData,
           [tabId]: { ...tabData[tabId], items: savedItems },
         });
+        // TODO: Save tabs
+        upsertTab(tabId, tab.name)
       }
     } catch (error: any) {
       // console.error(
@@ -137,7 +147,8 @@ export const useFirestore = (userId: string | null) => {
         }
         fetchedTabData[tabId].items.push(item);
       });
-
+      // If user has created notes on 2 browsers without signing in, only the notes where first signed in will be uploaded.
+      // May be improve this.
       if (Object.keys(fetchedTabData).length > 0) {
         setTabData(fetchedTabData);
         const tabIds = Object.keys(fetchedTabData);
@@ -181,7 +192,6 @@ export const useFirestore = (userId: string | null) => {
         if (reviewDoc.data()?.enabled) setAiEnabled(true);
       } else {
         // If no document is found, return null
-        console.log(`No review found for user with ID: ${userId}`);
         return null;
       }
     } catch (error) {
@@ -460,7 +470,6 @@ export const useFirestore = (userId: string | null) => {
      - This get called unnecessarily
      - Logic is completicated and runs unncessary checks because of data from earlier versions 
     */
-    console.log('checking if notes are empty...')
     const tabDataArray = Object.entries(tabData)
     if (tabDataArray.length === 0) setNoNotes(true);
     else if (tabDataArray.length==1 && tabDataArray[0][1].items.length === 0) setNoNotes(true);
