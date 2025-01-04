@@ -25,7 +25,7 @@ dist-ssr
 
 # Configs
 firebaseConfig.ts
-.firebase
+.firebase/*
 .firebaserc
 .firebase/hosting.ZGlzdA.cache
 *.cache
