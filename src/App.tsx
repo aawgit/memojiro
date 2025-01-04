@@ -75,7 +75,8 @@ const App: React.FC = () => {
     window.global = window;
   }
   
-
+  console.log(noNotes)
+  console.log(tabData)
   return (
     <div>
       <NavBarV2

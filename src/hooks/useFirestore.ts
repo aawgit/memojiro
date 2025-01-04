@@ -27,7 +27,7 @@ export interface tabDetails {
 }
 
 export interface TabData {
-  [key: string]: { name: string; items: Item[]; tabNameEditable: boolean };
+  [tabId: string]: { name: string; items: Item[]; tabNameEditable: boolean };
 }
 
 interface NotesOrder {
@@ -303,9 +303,11 @@ export const useFirestore = (userId: string | null) => {
     delete newTabData[tabId];
 
     // Determine the next tab to make the current tab
-    const tabIds = Object.keys(newTabData);
-    const nextTabId = tabIds.length > 0 ? tabIds[0] : "0";
-    if (nextTabId === "0") {
+    const tabIds = Object.keys(newTabData)
+    const nextTabId = tabIds? tabIds[0] : "0";
+
+    // Goes back to the no notes state
+    if (tabData[nextTabId].items.length==0) {
       newTabData["0"] = {
         name: "Home",
         items: [],
@@ -454,8 +456,14 @@ export const useFirestore = (userId: string | null) => {
   };
 
   const checkIfEmpty = () => {
-    if (Object.entries(tabData).length === 0) setNoNotes(true);
-    else if (Object.entries(tabData)[0][1].items.length === 0) setNoNotes(true);
+    /* TODO: Check and fix:
+     - This get called unnecessarily
+     - Logic is completicated and runs unncessary checks because of data from earlier versions 
+    */
+    console.log('checking if notes are empty...')
+    const tabDataArray = Object.entries(tabData)
+    if (tabDataArray.length === 0) setNoNotes(true);
+    else if (tabDataArray.length==1 && tabDataArray[0][1].items.length === 0) setNoNotes(true);
     else setNoNotes(false);
   };
 
