@@ -33,7 +33,7 @@ const TabTitle: React.FC<TabTitleProps> = ({
       onKeyDown={(e) => handleKeyPress(e, tabKey, e.target.value)}
     />
   ) : (
-    <span onDoubleClick={() => handleDoubleClick(tabKey)}>
+    <span onDoubleClick={() => handleDoubleClick(tabKey)} style={{color: "gray"}}>
       {tabData[tabKey].name}
     </span>
   );

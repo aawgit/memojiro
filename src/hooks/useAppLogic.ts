@@ -42,7 +42,7 @@ const useAppLogic = (user: any, isMobile: boolean) => {
 
   useEffect(checkIfEmpty, [tabData]);
 
-  const handleAddClick = () => setInputVisible(true);
+  const handleAddClick = () => setInputVisible((prevState) => !prevState);
   const handleDescriptionChange = (index: number, newDescription: string) => {
     const updatedItems = tabData[currentTab].items.map((item, i) =>
       i === index ? { ...item, description: newDescription } : item

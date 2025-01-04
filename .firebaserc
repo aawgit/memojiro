@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "wordgoose-2b83e"
-  }
+    "default": "memojironotes",
+    "memojiro": "memojironotes"
+  },
+  "targets": {},
+  "etags": {}
 }

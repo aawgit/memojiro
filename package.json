@@ -1,5 +1,5 @@
 {
-  "name": "stylish-todo",
+  "name": "memojiro",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,14 +13,17 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@hello-pangea/dnd": "^16.6.0",
+    "@tiptap/core": "^2.11.0",
+    "@tiptap/extension-link": "^2.11.0",
+    "@tiptap/react": "^2.11.0",
+    "@tiptap/starter-kit": "^2.11.0",
     "bootstrap": "^5.3.3",
     "firebase": "^10.12.2",
     "marked": "^12.0.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
     "react-dom": "^18.2.0",
-    "react-responsive": "^10.0.0",
-    "react-simple-wysiwyg": "^3.0.2"
+    "react-responsive": "^10.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
@@ -32,6 +35,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "tailwindcss": "^3.4.15",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   }

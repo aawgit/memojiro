@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Editor,
-  Toolbar,
-  EditorProvider,
-  BtnBulletList,
-  BtnNumberedList,
-  BtnLink,
-} from "react-simple-wysiwyg";
 import { Button } from "react-bootstrap";
+import CustomEditor from "./CustomEditor";
 
 interface ItemDetailProps {
   item: {
@@ -26,8 +19,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
   // handleCloseClick,
   handleDescriptionChange,
   saveOnCloud,
-  loggedIn,
-  isMobile,
+  loggedIn
 }) => {
   const [editedDescription, setEditedDescription] = useState(item.description);
   const [isChanged, setIsChanged] = useState(false);
@@ -49,31 +41,15 @@ const ItemDetail: React.FC<ItemDetailProps> = ({
 
   return (
     <>
-      {!isMobile && <h4 className="app-section-title">{item.title}</h4>}
-      {isMobile && <br></br>}
+
       {/* <Container className="large-text-area-container"> */}
       {/* <div className="close-button" onClick={handleCloseClick}>
         &times;
       </div> */}
-      <EditorProvider>
-        <Editor
-          value={editedDescription}
-          onChange={(e) => handleEditorChange(e.target.value)}
-          containerProps={{
-            style: {
-              background: "white",
-              // borderRadius: "12px",
-              border: "1px solid #ccc",
-            },
-          }}
-        >
-          <Toolbar>
-            <BtnBulletList />
-            <BtnNumberedList />
-            <BtnLink />
-          </Toolbar>
-        </Editor>
-      </EditorProvider>
+      <CustomEditor
+  value={editedDescription}
+  onChange={handleEditorChange}
+/>
       {/* </Container> */}
       <br></br>
       {loggedIn && (
