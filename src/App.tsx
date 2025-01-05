@@ -162,7 +162,6 @@ const App: React.FC = () => {
                 </Row>
               </Tab>
             ))}
-            {true && (
               <Tab
                 eventKey="<placeholder>"
                 title={
@@ -173,7 +172,6 @@ const App: React.FC = () => {
                   </span>
                 }
               />
-            )}
           </Tabs>
         )}
 
