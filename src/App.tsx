@@ -75,7 +75,6 @@ const App: React.FC = () => {
     window.global = window;
   }
   
-
   return (
     <div>
       <NavBarV2
@@ -163,7 +162,6 @@ const App: React.FC = () => {
                 </Row>
               </Tab>
             ))}
-            {user && (
               <Tab
                 eventKey="<placeholder>"
                 title={
@@ -174,7 +172,6 @@ const App: React.FC = () => {
                   </span>
                 }
               />
-            )}
           </Tabs>
         )}
 

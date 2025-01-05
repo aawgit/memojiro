@@ -123,7 +123,6 @@ const ItemList: React.FC<ItemListProps> = ({
                         >
                           <FontAwesomeIcon icon={faTrash} />
                         </span>
-                        {loggedIn && (
                           <DropdownButton
                             id={`dropdown-${index}`}
                             className="move-item-dropdown"
@@ -142,7 +141,6 @@ const ItemList: React.FC<ItemListProps> = ({
                               </Dropdown.Item>
                             ))}
                           </DropdownButton>
-                        )}
                       </div>
                     )}
                   </Draggable>
