@@ -56,9 +56,8 @@ export const useFirestore = (userId: string | null) => {
       setCurrentTab(Object.keys(savedData)[0])
       return savedData;
     } else {
-      const tabIdx = generateTabId();
       const dummyTab: TabData = {
-        [tabIdx]: { 
+        [currentTab]: { 
           name: "Home",
           items: getLocal("items") || [], // Simplify check for local items
           tabNameEditable: false,
@@ -211,7 +210,7 @@ export const useFirestore = (userId: string | null) => {
     const tempItem = {
       title,
       description: "",
-      itemId: String(tabData[tabId].items.length),
+      itemId: String(tabData[tabId].items?tabData[tabId].items.length: 0),
     };
     const newItems = [tempItem, ...tabData[tabId].items];
 
@@ -314,18 +313,18 @@ export const useFirestore = (userId: string | null) => {
 
     // Determine the next tab to make the current tab
     const tabIds = Object.keys(newTabData)
-    const nextTabId = tabIds? tabIds[0] : "0";
+    const firstTabId = tabIds?.length? tabIds[0] : generateTabId();
 
     // Goes back to the no notes state
-    if (tabData[nextTabId].items.length==0) {
-      newTabData["0"] = {
+    if (tabData[firstTabId]?.items?.length==0 || !tabData[firstTabId]) {
+      newTabData[firstTabId] = {
         name: "Home",
         items: [],
         tabNameEditable: false,
       };
     }
     setTabData(newTabData);
-    setCurrentTab(nextTabId);
+    setCurrentTab(firstTabId);
 
     // Update the tabs collection by deleting the tab
     if (userId) {
